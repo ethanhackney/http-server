@@ -34,6 +34,38 @@ void do_die(const char *file, const char *func, int line, const char *fmt, ...);
 #define die(_fmt, ...) \
         do_die(__FILE__, __func__, __LINE__, _fmt, ##__VA_ARGS__)
 
+/**
+ * print message and exit:
+ *
+ * args:
+ *  @file: file
+ *  @func: function
+ *  @line: line
+ *  @fmt:  format string
+ *  @...:  arguments
+ *
+ * ret:
+ *  exit process
+ */
+void do_die_no_errno(const char *file,
+                     const char *func,
+                     int line,
+                     const char *fmt, ...);
+
+/**
+ * print message and exit:
+ *
+ * args:
+ *  @_fmt: format string
+ *  @...:  arguments
+ *
+ * ret:
+ *  exit process
+ */
+#define die_no_errno(_fmt, ...) \
+        do_die_no_errno(__FILE__, __func__, __LINE__, _fmt, ##__VA_ARGS__)
+
+
 /* if debugging */
 #ifdef DBUG
 /**
