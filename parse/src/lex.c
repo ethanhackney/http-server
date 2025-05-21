@@ -287,6 +287,7 @@ void
 lex_next(struct lex *lp)
 {
         char c = -1;
+        int last = -1;
 
         LEX_OK(lp);
 
@@ -294,6 +295,7 @@ lex_next(struct lex *lp)
                 lex_not_special(lp);
                 return;
         }
+        last = lp->l_type;
 again:
         c = lex_getc(lp);
         if (c == LEX_EOF) {
@@ -302,6 +304,7 @@ again:
         }
 
         if (c == '\r') {
+                lp->l_type = last;
                 lex_crlf(lp);
                 return;
         }
@@ -611,4 +614,11 @@ lex_val(struct lex *lp)
         lp->l_val = false;
         lp->l_hdr = true;
         lex_set_token(lp, TT_VAL);
+}
+
+bool
+lex_empty(const struct lex *lp)
+{
+        LEX_OK(lp);
+        return lp->l_lex[0] == 0;
 }

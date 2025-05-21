@@ -5,3 +5,4 @@ printf 'Host: localhost\r\n'             >>req
 printf 'User-Agent: firefox\r\n'         >>req
 printf 'Accept: application/json\r\n'    >>req
 printf '\r\n'                            >>req
+printf '{ "addr": "127.0.0.1" }'         >>req

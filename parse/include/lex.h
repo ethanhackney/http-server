@@ -158,4 +158,16 @@ const char *lex_lex(struct lex *lp);
  */
 void lex_next(struct lex *lp);
 
+/**
+ * is lexeme empty?
+ *
+ * args:
+ *  @lp: pointer to lex{}
+ *
+ * ret:
+ *  @true:  if empty
+ *  @false: if not
+ */
+bool lex_empty(const struct lex *lp);
+
 #endif /* #ifndef LEX_H */
