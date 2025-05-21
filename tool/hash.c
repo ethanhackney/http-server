@@ -24,11 +24,23 @@ main(void)
                 "HTTP/1.1",
                 NULL,
         };
+        char *header[] = {
+                "Host",
+                "User-Agent",
+                "Accept",
+                NULL,
+        };
         char **p = NULL;
 
+        printf("methods\n");
         for (p = method; *p != NULL; p++)
-                printf("%zu\n", str_hash(*p) % 1);
+                printf("%s: %zu\n", *p, str_hash(*p) % 1);
 
+        printf("\nmethods\n");
         for (p = version; *p != NULL; p++)
-                printf("%zu\n", str_hash(*p) % 1);
+                printf("%s: %zu\n", *p, str_hash(*p) % 1);
+
+        printf("\nheader\n");
+        for (p = header; *p != NULL; p++)
+                printf("%s: %zu\n", *p, str_hash(*p) % 5);
 }

@@ -23,7 +23,9 @@ SRC     = main.c ../../lib/src/util.c ../src/iobuf.c ../src/lex.c
 CC      = gcc
 
 safe:
+	./mkreq
 	$(CC) $(DFLAGS) $(SRC)
 
 fast:
+	./mkreq
 	$(CC) $(FFLAGS) $(SRC)

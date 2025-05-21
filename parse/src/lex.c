@@ -7,6 +7,7 @@
 enum {
         HASH_METHOD_SIZE  = 1, /* size of method hash map */
         HASH_VERSION_SIZE = 1, /* size of version hash map */
+        HASH_HEADER_SIZE  = 5, /* size of header hash map */
 };
 
 /**
@@ -131,6 +132,22 @@ static void lex_crlf(struct lex *lp);
 static void lex_first(struct lex *lp);
 
 /**
+ * hash lookup:
+ *
+ * args:
+ *  @hash: hash table
+ *  @cap:  capacity of table
+ *  @key:  key to lookup
+ *
+ * ret:
+ *  @success: pointer to kword
+ *  @failure: NULL
+ */
+static const struct kword *lex_hash_get(const struct kword *hash,
+                                        size_t cap,
+                                        const char *key);
+
+/**
  * string hash function:
  *
  * args:
@@ -142,6 +159,30 @@ static void lex_first(struct lex *lp);
  *  @failure: does not
  */
 static size_t lex_hash(const char *s, size_t cap);
+
+/**
+ * header:
+ *
+ * args:
+ *  @lp: pointer to lex{}
+ *
+ * ret:
+ *  @success: nothing
+ *  @failure: does not
+ */
+static void lex_hdr(struct lex *lp);
+
+/**
+ * value:
+ *
+ * args:
+ *  @lp: pointer to lex{}
+ *
+ * ret:
+ *  @success: nothing
+ *  @failure: does not
+ */
+static void lex_val(struct lex *lp);
 
 int
 lex_init(struct lex *lp, int fd)
@@ -163,8 +204,8 @@ lex_init(struct lex *lp, int fd)
         lp->l_pay = false;
 
         lp->l_first = true;
-        lp->l_class = CL_ERR;
-        lp->l_type = TT_IO_ERR;
+        lp->l_class = CL_EOF;
+        lp->l_type = TT_EOF;
 
         lex_next(lp);
         return 0;
@@ -200,18 +241,23 @@ const char *
 lex_type_name(struct lex *lp)
 {
         static const char *const names[TT_COUNT] = {
-                [TT_FIRST_BAD] = "TT_FIRST_BAD",
-                [TT_TOO_LONG]  = "TT_TOO_LONG",
-                [TT_CRLF_ERR]  = "TT_CRLF_ERR",
-                [TT_BAD_CHAR]  = "TT_BAD_CHAR",
-                [TT_IO_ERR]    = "TT_IO_ERR",
-                [TT_V_1_1]     = "TT_V_1_1",
-                [TT_CHAR]      = "TT_CHAR",
-                [TT_PATH]      = "TT_PATH",
-                [TT_GET]       = "TT_GET",
-                [TT_EOL]       = "TT_EOL",
-                [TT_EOH]       = "TT_EOH",
-                [TT_EOF]       = "TT_EOF",
+                [TT_USER_AGENT] = "TT_USER_AGENT",
+                [TT_FIRST_BAD]  = "TT_FIRST_BAD",
+                [TT_TOO_LONG]   = "TT_TOO_LONG",
+                [TT_CRLF_ERR]   = "TT_CRLF_ERR",
+                [TT_BAD_CHAR]   = "TT_BAD_CHAR",
+                [TT_BAD_HDR]    = "TT_BAD_HDR",
+                [TT_ACCEPT]     = "TT_ACCEPT",
+                [TT_IO_ERR]     = "TT_IO_ERR",
+                [TT_V_1_1]      = "TT_V_1_1",
+                [TT_CHAR]       = "TT_CHAR",
+                [TT_HOST]       = "TT_HOST",
+                [TT_PATH]       = "TT_PATH",
+                [TT_GET]        = "TT_GET",
+                [TT_VAL]        = "TT_VAL",
+                [TT_EOL]        = "TT_EOL",
+                [TT_EOH]        = "TT_EOH",
+                [TT_EOF]        = "TT_EOF",
         };
 
         LEX_OK(lp);
@@ -224,6 +270,7 @@ lex_class_name(struct lex *lp)
         static const char *const names[TT_COUNT] = {
                 [CL_METHOD]  = "CL_METHOD",
                 [CL_VERSION] = "CL_VERSION",
+                [CL_HEADER]  = "CL_HEADER",
                 [CL_CHAR]    = "CL_CHAR",
                 [CL_PATH]    = "CL_PATH",
                 [CL_EOL]     = "CL_EOL",
@@ -243,18 +290,11 @@ lex_next(struct lex *lp)
 
         LEX_OK(lp);
 
-        lp->l_last = lp->l_type;
-again:
         if (lp->l_pay) {
                 lex_not_special(lp);
                 return;
         }
-
-        if (lp->l_val) {
-                lex_not_special(lp);
-                return;
-        }
-
+again:
         c = lex_getc(lp);
         if (c == LEX_EOF) {
                 lex_set_token(lp, TT_EOF);
@@ -269,12 +309,24 @@ again:
         if (isspace(c))
                 goto again;
 
+        lp->l_back = c;
+
+        if (lp->l_val) {
+                lex_val(lp);
+                return;
+        }
+
         if (lp->l_first) {
-                lp->l_back = c;
                 lex_first(lp);
                 return;
         }
 
+        if (lp->l_hdr) {
+                lex_hdr(lp);
+                return;
+        }
+
+        lp->l_back = 0;
         lp->l_lex[0] = c;
         lp->l_lex[1] = 0;
         lex_set_token(lp, TT_BAD_CHAR);
@@ -334,22 +386,28 @@ lex_set_token(struct lex *lp, int type)
         dbug(!in_range, "type is invalid");
 #endif
         static const int tt_to_cl[TT_COUNT] = {
-                [TT_FIRST_BAD] = CL_ERR,
-                [TT_TOO_LONG]  = CL_ERR,
-                [TT_BAD_CHAR]  = CL_ERR,
-                [TT_CRLF_ERR]  = CL_ERR,
-                [TT_IO_ERR]    = CL_ERR,
-                [TT_V_1_1]     = CL_VERSION,
-                [TT_CHAR]      = CL_CHAR,
-                [TT_PATH]      = CL_PATH,
-                [TT_GET]       = CL_METHOD,
-                [TT_EOL]       = CL_EOL,
-                [TT_EOH]       = CL_EOH,
-                [TT_EOF]       = CL_EOF,
+                [TT_USER_AGENT] = CL_HEADER,
+                [TT_FIRST_BAD]  = CL_ERR,
+                [TT_TOO_LONG]   = CL_ERR,
+                [TT_BAD_CHAR]   = CL_ERR,
+                [TT_CRLF_ERR]   = CL_ERR,
+                [TT_BAD_HDR]    = CL_ERR,
+                [TT_ACCEPT]     = CL_HEADER,
+                [TT_IO_ERR]     = CL_ERR,
+                [TT_V_1_1]      = CL_VERSION,
+                [TT_HOST]       = CL_HEADER,
+                [TT_CHAR]       = CL_CHAR,
+                [TT_PATH]       = CL_PATH,
+                [TT_GET]        = CL_METHOD,
+                [TT_EOL]        = CL_EOL,
+                [TT_VAL]        = CL_VAL,
+                [TT_EOH]        = CL_EOH,
+                [TT_EOF]        = CL_EOF,
         };
 
-        lp->l_type = type;
         LEX_OK(lp);
+        lp->l_last = lp->l_type;
+        lp->l_type = type;
         lp->l_class = tt_to_cl[lp->l_type];
 }
 
@@ -380,6 +438,7 @@ lex_crlf(struct lex *lp)
                 lex_set_token(lp, TT_EOH);
         } else {
                 lp->l_first = false;
+                lp->l_hdr = true;
                 lex_set_token(lp, TT_EOL);
         }
 }
@@ -394,23 +453,25 @@ lex_first(struct lex *lp)
                 [0] = { "HTTP/1.1", TT_V_1_1 },
         };
         const struct kword *kp = NULL;
-        size_t bkt = 0;
         char *p = NULL;
         char c = -1;
 
+        LEX_OK(lp);
+
         while_lex_not_full(lp, p) {
                 c = lex_getc(lp);
-                if (lp->l_type != TT_CHAR)
-                        break;
                 if (isspace(c))
                         break;
                 *p = c;
+                if (lp->l_type != TT_CHAR)
+                        break;
         }
-        lp->l_back = c;
         *p = 0;
 
         if (lp->l_type != TT_CHAR)
                 return;
+
+        lp->l_back = c;
 
         if (!isspace(c)) {
                 lex_set_token(lp, TT_TOO_LONG);
@@ -423,21 +484,41 @@ lex_first(struct lex *lp)
                 return;
         }
 
-        bkt = lex_hash(p, HASH_METHOD_SIZE);
-        kp = &method_hash[bkt];
-        if (strcmp(p, kp->k_word) == 0) {
+        kp = lex_hash_get(method_hash, HASH_METHOD_SIZE, p);
+        if (kp != NULL) {
                 lex_set_token(lp, kp->k_type);
                 return;
         }
 
-        bkt = lex_hash(p, HASH_VERSION_SIZE);
-        kp = &version_hash[bkt];
-        if (strcmp(p, kp->k_word) == 0) {
+        kp = lex_hash_get(version_hash, HASH_VERSION_SIZE, p);
+        if (kp != NULL) {
                 lex_set_token(lp, kp->k_type);
                 return;
         }
 
         lex_set_token(lp, TT_FIRST_BAD);
+}
+
+static const struct kword *
+lex_hash_get(const struct kword *hash, size_t cap, const char *key)
+{
+        const struct kword *kp = NULL;
+        size_t bkt = 0;
+
+        dbug(hash == NULL, "hash == NULL");
+        dbug(cap == 0, "cap == 0");
+        dbug(key == NULL, "key == NULL");
+
+        bkt = lex_hash(key, cap);
+        kp = &hash[bkt];
+
+        if (kp->k_word == NULL)
+                return NULL;
+
+        if (strcmp(key, kp->k_word) != 0)
+                return NULL;
+
+        return kp;
 }
 
 static size_t
@@ -446,9 +527,88 @@ lex_hash(const char *s, size_t cap)
         const char *p = NULL;
         size_t hash = 0;
 
+        dbug(s == NULL, "s == NULL");
+        dbug(cap == 0, "cap == 0");
+
         hash = 5381;
         for (p = s; *p != 0; p++)
                 hash = hash * 31 + (size_t)*p;
 
         return hash % cap;
+}
+
+static void
+lex_hdr(struct lex *lp)
+{
+        static const struct kword hdr_hash[HASH_HEADER_SIZE] = {
+                [1] = { "User-Agent", TT_USER_AGENT },
+                [3] = { "Accept",     TT_ACCEPT     },
+                [0] = { "Host",       TT_HOST       },
+        };
+        const struct kword *kp = NULL;
+        char *p = NULL;
+        char c = -1;
+
+        LEX_OK(lp);
+
+        while_lex_not_full(lp, p) {
+                c = lex_getc(lp);
+                if (c == ':')
+                        break;
+                *p = c;
+                if (lp->l_type != TT_CHAR)
+                        break;
+        }
+        *p = 0;
+
+        if (lp->l_type != TT_CHAR)
+                return;
+
+        if (c != ':') {
+                lp->l_back = c;
+                lex_set_token(lp, TT_TOO_LONG);
+                return;
+        }
+
+        kp = lex_hash_get(hdr_hash, HASH_HEADER_SIZE, lp->l_lex);
+        if (kp != NULL) {
+                lp->l_hdr = false;
+                lp->l_val = true;
+                lex_set_token(lp, kp->k_type);
+                return;
+        }
+
+        lex_set_token(lp, TT_BAD_HDR);
+}
+
+static void
+lex_val(struct lex *lp)
+{
+        char *p = NULL;
+        char c = -1;
+
+        LEX_OK(lp);
+
+        while_lex_not_full(lp, p) {
+                c = lex_getc(lp);
+                if (c == '\r')
+                        break;
+                *p = c;
+                if (lp->l_type != TT_CHAR)
+                        break;
+        }
+        lp->l_back = c;
+        *p = 0;
+
+        if (lp->l_type != TT_CHAR)
+                return;
+
+        if (c != '\r') {
+                lex_set_token(lp, TT_TOO_LONG);
+                return;
+        }
+
+        lp->l_val = false;
+        lp->l_hdr = true;
+        lex_set_token(lp, TT_VAL);
 }

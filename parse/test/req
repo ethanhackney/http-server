@@ -1,2 +1,5 @@
-GET /thing HTTP/1.1
+GET /path/to/thing HTTP/1.1
+Host: localhost
+User-Agent: firefox
+Accept: application/json
 
