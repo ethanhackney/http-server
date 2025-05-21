@@ -29,6 +29,7 @@ enum {
         TT_USER_AGENT, /* User-Agent */
         TT_ACCEPT,     /* Accept */
         TT_VAL,        /* header value */
+        TT_POST,       /* POST */
         TT_COUNT,      /* token type count */
 };
 

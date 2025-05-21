@@ -5,7 +5,7 @@
 
 /* hash sizes */
 enum {
-        HASH_METHOD_SIZE  = 1, /* size of method hash map */
+        HASH_METHOD_SIZE  = 5, /* size of method hash map */
         HASH_VERSION_SIZE = 1, /* size of version hash map */
         HASH_HEADER_SIZE  = 5, /* size of header hash map */
 };
@@ -253,6 +253,7 @@ lex_type_name(struct lex *lp)
                 [TT_CHAR]       = "TT_CHAR",
                 [TT_HOST]       = "TT_HOST",
                 [TT_PATH]       = "TT_PATH",
+                [TT_POST]       = "TT_POST",
                 [TT_GET]        = "TT_GET",
                 [TT_VAL]        = "TT_VAL",
                 [TT_EOL]        = "TT_EOL",
@@ -399,6 +400,7 @@ lex_set_token(struct lex *lp, int type)
                 [TT_IO_ERR]     = CL_ERR,
                 [TT_V_1_1]      = CL_VERSION,
                 [TT_HOST]       = CL_HEADER,
+                [TT_POST]       = CL_METHOD,
                 [TT_CHAR]       = CL_CHAR,
                 [TT_PATH]       = CL_PATH,
                 [TT_GET]        = CL_METHOD,
@@ -450,7 +452,8 @@ static void
 lex_first(struct lex *lp)
 {
         static const struct kword method_hash[HASH_METHOD_SIZE] = {
-                [0] = { "GET", TT_GET },
+                [0] = { "GET",  TT_GET },
+                [2] = { "POST", TT_POST },
         };
         static const struct kword version_hash[HASH_VERSION_SIZE] = {
                 [0] = { "HTTP/1.1", TT_V_1_1 },

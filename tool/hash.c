@@ -18,6 +18,7 @@ main(void)
 {
         char *method[] = {
                 "GET",
+                "POST",
                 NULL,
         };
         char *version[] = {
@@ -34,7 +35,7 @@ main(void)
 
         printf("methods\n");
         for (p = method; *p != NULL; p++)
-                printf("%s: %zu\n", *p, str_hash(*p) % 1);
+                printf("%s: %zu\n", *p, str_hash(*p) % 5);
 
         printf("\nmethods\n");
         for (p = version; *p != NULL; p++)
