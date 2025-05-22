@@ -150,11 +150,12 @@ again:
                 goto again;
         if (n < 0)
                 return -1;
-        if (n == 0)
-                return IOBUF_EOF;
 
         ip->i_inp = ip->i_in;
         ip->i_endp = ip->i_in + n;
+        if (n == 0)
+                return IOBUF_EOF;
+
         IOBUF_OK(ip);
         return 0;
 }
@@ -164,8 +165,16 @@ iobuf_move(struct iobuf *dst, struct iobuf *src)
 {
         dbug(dst == NULL, "dst == NULL");
         IOBUF_OK(src);
-        memcpy(dst, src, sizeof(*dst));
-        memset(src, 0, sizeof(*src));
+
+        dst->i_fd = src->i_fd;
+
+        memcpy(dst->i_in, src->i_in, sizeof(dst->i_in));
+        dst->i_inp = dst->i_in + (src->i_inp - src->i_in);
+        dst->i_endp = dst->i_in + (src->i_endp - src->i_in);
+
+        memcpy(dst->i_out, src->i_out, sizeof(dst->i_out));
+        dst->i_outp = (dst->i_out + (src->i_outp - src->i_out));
+
         src->i_fd = -1;
 }
 

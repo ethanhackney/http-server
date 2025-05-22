@@ -4,6 +4,9 @@
 #include "iobuf.h"
 #include <stdbool.h>
 
+/* request */
+struct req;
+
 /* misc. constants */
 enum {
         LEX_LEX_SIZE = (1 << 10) - 1, /* lexeme size */
@@ -170,5 +173,18 @@ void lex_next(struct lex *lp);
  *  @false: if not
  */
 bool lex_empty(const struct lex *lp);
+
+/**
+ * move l_buf to r_buf:
+ *
+ * args:
+ *  @lp: pointer to lex{}
+ *  @rp: pointer to req{}
+ *
+ * ret:
+ *  @success: 0
+ *  @failure: -1 and errno set
+ */
+int lex_buf_move(struct lex *lp, struct req *rp);
 
 #endif /* #ifndef LEX_H */

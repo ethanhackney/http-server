@@ -4,6 +4,8 @@
 #include "iobuf.h"
 #include "lex.h"
 #include <sys/socket.h>
+#include <sys/types.h>
+#include <stddef.h>
 
 /* ipv[46] address */
 typedef struct sockaddr_storage ip_addr_t;
@@ -110,5 +112,44 @@ int req_set_method(struct req *rp, int type);
  *  @failure: NULL
  */
 const char *req_method_name(struct req *rp);
+
+/**
+ * set version:
+ *
+ * args:
+ *  @rp:   pointer to req{}
+ *  @type: token type
+ *
+ * ret:
+ *  @success: 0
+ *  @failure: -1 and errno set
+ */
+int req_set_v(struct req *rp, int type);
+
+/**
+ * get version name:
+ *
+ * args:
+ *  @rp:   pointer to req{}
+ *
+ * ret:
+ *  @success: pointer to version name
+ *  @failure: NULL
+ */
+const char *req_v_name(struct req *rp);
+
+/**
+ * read from req{}:
+ *
+ * args:
+ *  @rp:  pointer to req{}
+ *  @buf: buffer
+ *  @sz:  size of buffer
+ *
+ * ret:
+ *  @success: number of bytes read
+ *  @failure: -1 and errno set
+ */
+ssize_t req_read(struct req *rp, char *buf, size_t sz);
 
 #endif /* #ifndef REQ_H */

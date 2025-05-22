@@ -12,6 +12,8 @@ main(void)
         struct sockaddr_storage ss = {0};
         struct lex lex = {0};
         struct req req = {0};
+        ssize_t n = 0;
+        char buf[IOBUF_SIZE + 1];
         int c = -1;
 
         if (lex_init(&lex, STDIN_FILENO) < 0)
@@ -24,21 +26,22 @@ main(void)
         while ((c = lex_class(&lex)) != CL_EOF && c != CL_ERR && c != CL_EOH) {
                 if (c == CL_METHOD)
                         req_set_method(&req, lex_type(&lex));
+                if (c == CL_VERSION)
+                        req_set_v(&req, lex_type(&lex));
                 lex_next(&lex);
         }
 
-        printf("method: %s\n", req_method_name(&req));
+        printf("method:  %s\n", req_method_name(&req));
+        printf("version: %s\n", req_v_name(&req));
 
         if (lex_class(&lex) == CL_ERR) {
                 printf("%s: \"%s\"\n", lex_type_name(&lex), lex_lex(&lex));
         } else {
-                lex_next(&lex);
-                while (lex_class(&lex) == CL_CHAR) {
-                        printf("%s\n", lex_lex(&lex));
-                        lex_next(&lex);
+                lex_buf_move(&lex, &req);
+                while ((n = req_read(&req, buf, IOBUF_SIZE)) > 0) {
+                        buf[n] = 0;
+                        printf("%s\n", buf);
                 }
-                if (!lex_empty(&lex))
-                        printf("%s\n", lex_lex(&lex));
         }
 
         if (lex_free(&lex) < 0)

@@ -1,5 +1,6 @@
 #include "../../lib/include/util.h"
 #include "../include/lex.h"
+#include "../include/req.h"
 #include <string.h>
 #include <ctype.h>
 
@@ -621,4 +622,13 @@ lex_empty(const struct lex *lp)
 {
         LEX_OK(lp);
         return lp->l_lex[0] == 0;
+}
+
+int
+lex_buf_move(struct lex *lp, struct req *rp)
+{
+        LEX_OK(lp);
+        dbug(rp == NULL, "rp == NULL");
+
+        return req_set_buf(rp, &lp->l_buf);
 }
