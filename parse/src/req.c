@@ -56,10 +56,10 @@
 #endif /* #ifdef DBUG */
 
 int
-req_init(struct req *rp, struct iobuf *ip)
+req_init(struct req *rp)
 {
+        dbug(rp == NULL, "rp == NULL");
         memset(rp, 0, sizeof(*rp));
-        iobuf_move(&rp->r_buf, ip);
         return 0;
 }
 
@@ -74,4 +74,13 @@ req_free(struct req *rp)
         memset(rp, 0, sizeof(*rp));
         rp->r_method = -1;
         return -1;
+}
+
+int
+req_set_buf(struct req *rp, struct iobuf *ip)
+{
+        dbug(ip == NULL, "ip == NULL");
+        REQ_OK(rp);
+        iobuf_move(&rp->r_buf, ip);
+        return 0;
 }

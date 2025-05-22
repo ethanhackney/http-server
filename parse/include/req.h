@@ -10,9 +10,9 @@ typedef struct sockaddr_storage ip_addr_t;
 
 /* misc. constants */
 enum {
-        REQ_HDR_VAL_SIZE = LEX_LEX_SIZE,  /* size of header value */
-        REQ_PATH_SIZE    = (1 << 12) - 1, /* resource size */
-        REQ_PAY_SIZE     = (1 << 13),     /* payload size */
+        REQ_HDR_VAL_SIZE = LEX_LEX_SIZE, /* size of header value */
+        REQ_URL_SIZE    = (1 << 12) - 1, /* url size */
+        REQ_PAY_SIZE     = (1 << 13),    /* payload size */
 };
 
 /* methods */
@@ -43,7 +43,7 @@ struct req {
         char         r_hdr[REQ_HDR_COUNT]
                           [REQ_HDR_VAL_SIZE + 1]; /* public: headers */
         char         r_pay[REQ_PAY_SIZE];         /* public: payload */
-        char         r_path[REQ_PATH_SIZE + 1];   /* public: resource */
+        char         r_url[REQ_URL_SIZE + 1];     /* public: url */
         int          r_method;                    /* public: method */
         int          r_v;                         /* public: version */
 };
@@ -53,13 +53,12 @@ struct req {
  *
  * args:
  *  @rp: pointer to req{}
- *  @ip: pointer to iobuf{}
  *
  * ret:
  *  @success: 0
  *  @failure: -1 and errno set
  */
-int req_init(struct req *rp, struct iobuf *ip);
+int req_init(struct req *rp);
 
 /**
  * free req{}:
@@ -72,5 +71,18 @@ int req_init(struct req *rp, struct iobuf *ip);
  *  @failure: -1 and errno set
  */
 int req_free(struct req *rp);
+
+/**
+ * set iobuf{}:
+ *
+ * args:
+ *  @rp: pointer to req{}
+ *  @ip: pointer to iobuf{}
+ *
+ * ret:
+ *  @success: 0
+ *  @failure: -1 and errno set
+ */
+int req_set_buf(struct req *rp, struct iobuf *ip);
 
 #endif /* #ifndef REQ_H */
