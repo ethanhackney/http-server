@@ -215,11 +215,8 @@ int
 lex_free(struct lex *lp)
 {
         LEX_OK(lp);
-
-        if (iobuf_free(&lp->l_buf) < 0)
-                return -1;
-
         memset(lp, 0, sizeof(*lp));
+        lp->l_class = CL_EOF - 1;
         return 0;
 }
 

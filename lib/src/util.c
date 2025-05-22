@@ -6,26 +6,30 @@ void
 do_die(const char *file, const char *func, int line, const char *fmt, ...)
 {
         va_list va;
-        int tmp = 0;
+        int tmp = -1;
+        int err = -1;
 
         tmp = errno;
-        fprintf(stderr, "[%s:%s:%d]: ", file, func, line);
+        err = STDERR_FILENO;
+        dprintf(err, "[%d:%s:%s:%d]: ", (int)getpid(), file, func, line);
         va_start(va, fmt);
-        vfprintf(stderr, fmt, va);
+        vdprintf(err, fmt, va);
         va_end(va);
-        fprintf(stderr, ": %s\n", strerror(tmp));
-        exit(EXIT_FAILURE);
+        dprintf(err, ": %s\n", strerror(tmp));
+        _exit(EXIT_FAILURE);
 }
 
 void
 do_die_no_errno(const char *file, const char *func, int line, const char *fmt, ...)
 {
         va_list va;
+        int err = -1;
 
-        fprintf(stderr, "[%s:%s:%d]: ", file, func, line);
+        err = STDERR_FILENO;
+        dprintf(err, "[%d:%s:%s:%d]: ", (int)getpid(), file, func, line);
         va_start(va, fmt);
-        vfprintf(stderr, fmt, va);
+        vdprintf(err, fmt, va);
         va_end(va);
-        fprintf(stderr, "\n");
-        exit(EXIT_FAILURE);
+        dprintf(err, "\n");
+        _exit(EXIT_FAILURE);
 }

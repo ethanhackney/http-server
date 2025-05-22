@@ -5,6 +5,21 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+
+/**
+ * get min of two numbers:
+ *
+ * args:
+ *  @_a: first
+ *  @_b: second
+ *
+ * ret:
+ *  @success: min of _a and _b
+ *  @failure: does not
+ */
+#define min(_a, _b) \
+        ((_a) < (_b) ? (_a) : (_b))
 
 /**
  * print message + errno message and exit:
@@ -90,16 +105,18 @@ do_dbug(bool cond,
         const char *fmt, ...)
 {
         va_list va;
+        int err = -1;
 
         if (!cond)
                 return;
 
-        fprintf(stderr, "[%s:%s:%d]: ", file, func, line);
+        err = STDERR_FILENO;
+        dprintf(err, "[%d:%s:%s:%d]: ", (int)getpid(), file, func, line);
         va_start(va, fmt);
-        vfprintf(stderr, fmt, va);
+        vdprintf(err, fmt, va);
         va_end(va);
-        fprintf(stderr, "\n");
-        exit(EXIT_FAILURE);
+        dprintf(err, "\n");
+        _exit(EXIT_FAILURE);
 }
 #else
 static inline void

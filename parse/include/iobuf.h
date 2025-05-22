@@ -1,6 +1,9 @@
 #ifndef IOBUF_H
 #define IOBUF_H
 
+#include <stddef.h>
+#include <sys/types.h>
+
 /* misc. constants */
 enum {
         IOBUF_SIZE = (1 << 13), /* buffer size */
@@ -58,13 +61,53 @@ int iobuf_getc(struct iobuf *ip);
  * move iobuf:
  *
  * args:
- *  @src: source
- *  @dst: destination
+ *  @src: pointer to source
+ *  @dst: pointer to destination
  *
  * ret:
  *  @success: nothing
  *  @failure: does not
  */
 void iobuf_move(struct iobuf *dst, struct iobuf *src);
+
+/**
+ * printf for iobuf{}:
+ *
+ * args:
+ *  @ip:  pointer to iobuf{}
+ *  @fmt: format string
+ *  @...: arguments
+ *
+ * ret:
+ *  @success: 0
+ *  @failure: -1 and errno set
+ */
+int iobuf_printf(struct iobuf *ip, const char *fmt, ...);
+
+/**
+ * flush output buffer:
+ *
+ * args:
+ *  @ip: pointer to iobuf{}:
+ *
+ * ret:
+ *  @success: 0
+ *  @failure: -1 and errno set
+ */
+int iobuf_flush(struct iobuf *ip);
+
+/**
+ * read from iobuf{}:
+ *
+ * args:
+ *  @ip:  pointer to iobuf{}:
+ *  @buf: buffer
+ *  @sz:  size of buf
+ *
+ * ret:
+ *  @success: number of bytes read
+ *  @failure: -1 and errno set
+ */
+ssize_t iobuf_read(struct iobuf *ip, char *buf, size_t sz);
 
 #endif /* #ifndef IOBUF_H */
