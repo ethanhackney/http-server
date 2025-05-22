@@ -21,7 +21,7 @@ enum {
         TT_BAD_HDR,    /* bad header */
         TT_ACCEPT,     /* Accept */
         TT_V_1_1,      /* HTTP/1.1 */
-        TT_PATH,       /* resource path */
+        TT_URL,        /* url */
         TT_HOST,       /* Host */
         TT_POST,       /* POST */
         TT_CHAR,       /* regular character */
@@ -40,7 +40,7 @@ enum {
         CL_METHOD,  /* method */
         CL_HEADER,  /* header */
         CL_CHAR,    /* regular character */
-        CL_PATH,    /* path */
+        CL_URL,     /* url */
         CL_EOF,     /* end of file */
         CL_EOL,     /* end of line */
         CL_EOH,     /* end of header */

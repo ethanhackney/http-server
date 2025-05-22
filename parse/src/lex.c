@@ -249,8 +249,8 @@ lex_type_name(struct lex *lp)
                 [TT_V_1_1]      = "TT_V_1_1",
                 [TT_CHAR]       = "TT_CHAR",
                 [TT_HOST]       = "TT_HOST",
-                [TT_PATH]       = "TT_PATH",
                 [TT_POST]       = "TT_POST",
+                [TT_URL]        = "TT_URL",
                 [TT_GET]        = "TT_GET",
                 [TT_VAL]        = "TT_VAL",
                 [TT_EOL]        = "TT_EOL",
@@ -270,7 +270,7 @@ lex_class_name(struct lex *lp)
                 [CL_VERSION] = "CL_VERSION",
                 [CL_HEADER]  = "CL_HEADER",
                 [CL_CHAR]    = "CL_CHAR",
-                [CL_PATH]    = "CL_PATH",
+                [CL_URL]     = "CL_URL",
                 [CL_EOL]     = "CL_EOL",
                 [CL_EOH]     = "CL_EOH",
                 [CL_ERR]     = "CL_ERR",
@@ -399,7 +399,7 @@ lex_set_token(struct lex *lp, int type)
                 [TT_HOST]       = CL_HEADER,
                 [TT_POST]       = CL_METHOD,
                 [TT_CHAR]       = CL_CHAR,
-                [TT_PATH]       = CL_PATH,
+                [TT_URL]        = CL_URL,
                 [TT_GET]        = CL_METHOD,
                 [TT_EOL]        = CL_EOL,
                 [TT_VAL]        = CL_VAL,
@@ -483,7 +483,7 @@ lex_first(struct lex *lp)
 
         p = lp->l_lex;
         if (*p == '/') {
-                lex_set_token(lp, TT_PATH);
+                lex_set_token(lp, TT_URL);
                 return;
         }
 

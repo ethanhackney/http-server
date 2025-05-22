@@ -53,12 +53,13 @@ struct req {
  *
  * args:
  *  @rp: pointer to req{}
+ *  @sp: pointer to client address
  *
  * ret:
  *  @success: 0
  *  @failure: -1 and errno set
  */
-int req_init(struct req *rp);
+int req_init(struct req *rp, const struct sockaddr_storage *sp);
 
 /**
  * free req{}:
@@ -84,5 +85,30 @@ int req_free(struct req *rp);
  *  @failure: -1 and errno set
  */
 int req_set_buf(struct req *rp, struct iobuf *ip);
+
+/**
+ * set method:
+ *
+ * args:
+ *  @rp:   pointer to req{}
+ *  @type: token type
+ *
+ * ret:
+ *  @success: 0
+ *  @failure: -1 and errno set
+ */
+int req_set_method(struct req *rp, int type);
+
+/**
+ * get method name:
+ *
+ * args:
+ *  @rp:   pointer to req{}
+ *
+ * ret:
+ *  @success: pointer to method name
+ *  @failure: NULL
+ */
+const char *req_method_name(struct req *rp);
 
 #endif /* #ifndef REQ_H */

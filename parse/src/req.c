@@ -1,5 +1,6 @@
 #include "../../lib/include/util.h"
 #include "../include/req.h"
+#include "../include/lex.h"
 #include <string.h>
 
 /* if debugging */
@@ -56,10 +57,12 @@
 #endif /* #ifdef DBUG */
 
 int
-req_init(struct req *rp)
+req_init(struct req *rp, const struct sockaddr_storage *sp)
 {
         dbug(rp == NULL, "rp == NULL");
+        dbug(sp == NULL, "sp == NULL");
         memset(rp, 0, sizeof(*rp));
+        memcpy(&rp->r_addr, sp, sizeof(*sp));
         return 0;
 }
 
@@ -83,4 +86,49 @@ req_set_buf(struct req *rp, struct iobuf *ip)
         REQ_OK(rp);
         iobuf_move(&rp->r_buf, ip);
         return 0;
+}
+
+int
+req_set_method(struct req *rp, int type)
+{
+        static const int tt_to_method[TT_COUNT] = {
+                [TT_USER_AGENT] = -1,
+                [TT_FIRST_BAD]  = -1,
+                [TT_TOO_LONG]   = -1,
+                [TT_CRLF_ERR]   = -1,
+                [TT_BAD_CHAR]   = -1,
+                [TT_BAD_HDR]    = -1,
+                [TT_ACCEPT]     = -1,
+                [TT_IO_ERR]     = -1,
+                [TT_V_1_1]      = -1,
+                [TT_CHAR]       = -1,
+                [TT_HOST]       = -1,
+                [TT_URL]        = -1,
+                [TT_POST]       = REQ_METHOD_POST,
+                [TT_GET]        = REQ_METHOD_GET,
+                [TT_VAL]        = -1,
+                [TT_EOL]        = -1,
+                [TT_EOH]        = -1,
+                [TT_EOF]        = -1,
+        };
+        int m = -1;
+
+        REQ_OK(rp);
+
+        m = tt_to_method[type];
+        dbug(m < 0, "method type invalid");
+        rp->r_method = m;
+        return 0;
+}
+
+const char *
+req_method_name(struct req *rp)
+{
+        static const char *const names[REQ_METHOD_COUNT] = {
+                [REQ_METHOD_POST] = "REQ_METHOD_POST",
+                [REQ_METHOD_GET]  = "REQ_METHOD_GET",
+        };
+
+        REQ_OK(rp);
+        return names[rp->r_method];
 }
