@@ -54,4 +54,17 @@ int iobuf_free(struct iobuf *ip);
  */
 int iobuf_getc(struct iobuf *ip);
 
+/**
+ * move iobuf:
+ *
+ * args:
+ *  @src: source
+ *  @dst: destination
+ *
+ * ret:
+ *  @success: nothing
+ *  @failure: does not
+ */
+void iobuf_move(struct iobuf *dst, struct iobuf *src);
+
 #endif /* #ifndef IOBUF_H */

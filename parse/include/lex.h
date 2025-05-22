@@ -1,7 +1,7 @@
 #ifndef LEX_H
 #define LEX_H
 
-#include "../include/iobuf.h"
+#include "iobuf.h"
 #include <stdbool.h>
 
 /* misc. constants */
@@ -13,37 +13,37 @@ enum {
 /* token types */
 enum {
         TT_IO_ERR,     /* io error (must be first) */
+        TT_USER_AGENT, /* User-Agent */
+        TT_FIRST_BAD,  /* token bad for first line */
         TT_CRLF_ERR,   /* \r not followed by \n */
         TT_BAD_CHAR,   /* invalid character */
         TT_TOO_LONG,   /* lexeme overflow */
-        TT_FIRST_BAD,  /* token bad for first line */
         TT_BAD_HDR,    /* bad header */
+        TT_ACCEPT,     /* Accept */
+        TT_V_1_1,      /* HTTP/1.1 */
         TT_PATH,       /* resource path */
+        TT_HOST,       /* Host */
+        TT_POST,       /* POST */
+        TT_CHAR,       /* regular character */
         TT_EOF,        /* end of file */
         TT_EOL,        /* end of line */
         TT_EOH,        /* end of headers */
-        TT_CHAR,       /* regular character */
         TT_GET,        /* GET */
-        TT_V_1_1,      /* HTTP/1.1 */
-        TT_HOST,       /* Host */
-        TT_USER_AGENT, /* User-Agent */
-        TT_ACCEPT,     /* Accept */
         TT_VAL,        /* header value */
-        TT_POST,       /* POST */
         TT_COUNT,      /* token type count */
 };
 
 /* token classes */
 enum {
         CL_ERR,     /* error (must be first) */
+        CL_VERSION, /* version */
+        CL_METHOD,  /* method */
+        CL_HEADER,  /* header */
+        CL_CHAR,    /* regular character */
+        CL_PATH,    /* path */
         CL_EOF,     /* end of file */
         CL_EOL,     /* end of line */
         CL_EOH,     /* end of header */
-        CL_CHAR,    /* regular character */
-        CL_PATH,    /* path */
-        CL_METHOD,  /* method */
-        CL_VERSION, /* version */
-        CL_HEADER,  /* header */
         CL_VAL,     /* header value */
         CL_COUNT,   /* class count */
 };

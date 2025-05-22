@@ -140,3 +140,11 @@ again:
         IOBUF_OK(ip);
         return 0;
 }
+
+void
+iobuf_move(struct iobuf *dst, struct iobuf *src)
+{
+        IOBUF_OK(src);
+        memcpy(dst, src, sizeof(*dst));
+        iobuf_free(src);
+}
