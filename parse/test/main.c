@@ -9,10 +9,14 @@ int
 main(void)
 {
         struct lex lex = {0};
+        struct req req = {0};
         int c = -1;
 
         if (lex_init(&lex, STDIN_FILENO) < 0)
                 die("lex_init");
+
+        if (req_init(&req) < 0)
+                die("req_init");
 
         while ((c = lex_class(&lex)) != CL_EOF && c != CL_ERR && c != CL_EOH) {
                 printf("%s: \"%s\"\n", lex_type_name(&lex), lex_lex(&lex));
@@ -33,4 +37,7 @@ main(void)
 
         if (lex_free(&lex) < 0)
                 die("lex_free");
+
+        if (req_free(&req) < 0)
+                die("req_free");
 }

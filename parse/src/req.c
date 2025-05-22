@@ -30,8 +30,8 @@
         _ip = _fam == AF_INET || _fam == AF_INET6;                      \
         dbug(!_ip, "rp->r_addr not ip");                                \
                                                                         \
-        _len = strnlen((_rp)->r_path, REQ_PATH_SIZE);                   \
-        dbug((_rp)->r_path[_len] != 0, "rp->r_path end not null");      \
+        _len = strnlen((_rp)->r_url, REQ_URL_SIZE);                     \
+        dbug((_rp)->r_url[_len] != 0, "rp->r_url end not null");        \
                                                                         \
         _above = REQ_METHOD_GET <= (_rp)->r_method;                     \
         _below = (_rp)->r_method < REQ_METHOD_COUNT;                    \
