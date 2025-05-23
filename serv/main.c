@@ -18,6 +18,20 @@
                  "Content-Type: text/plain\r\n"
 
 /**
+ * try to listen at host:service with backlog of qsize:
+ *
+ * args:
+ *  @host:  host
+ *  @serv:  service (name or port)
+ *  @qsize: backlog size
+ *
+ * ret:
+ *  @success: file descriptor
+ *  @failure: exit process
+ */
+static int tcp_listen(const char *host, const char *serv, int qsize);
+
+/**
  * try to listen at address:
  *
  * args:
@@ -86,31 +100,12 @@ main(void)
 {
         struct sockaddr_storage addr = {0};
         socklen_t addrlen = 0;
-        struct addrinfo info = {0};
-        struct addrinfo *head = NULL;
-        struct addrinfo *ap = NULL;
         struct sigaction act = {0};
         pid_t pid = 0;
         int servfd = -1;
         int clifd = -1;
-        int e = -1;
 
-        info.ai_family = AF_UNSPEC;
-        info.ai_socktype = SOCK_STREAM;
-        info.ai_flags = AI_PASSIVE;
-
-        e = getaddrinfo("localhost", "8080", &info, &head);
-        if (e != 0)
-                die_no_errno("getaddrinfo: %s", gai_strerror(e));
-
-        for (ap = head; ap != NULL; ap = ap->ai_next) {
-                servfd = try_addr(ap, 10);
-                if (servfd >= 0)
-                        break;
-        }
-        freeaddrinfo(head);
-        if (servfd < 0)
-                die_no_errno("could not listen at localhost:8080");
+        servfd = tcp_listen("localhost", "8080", 10);
 
         sigemptyset(&act.sa_mask);
         act.sa_handler = sig_reap;
@@ -145,9 +140,37 @@ again:
 }
 
 static int
+tcp_listen(const char *host, const char *serv, int qsize)
+{
+        struct addrinfo info = {0};
+        struct addrinfo *head = NULL;
+        struct addrinfo *ap = NULL;
+        int fd = -1;
+        int e = -1;
+
+        info.ai_family = AF_UNSPEC;
+        info.ai_socktype = SOCK_STREAM;
+        info.ai_flags = AI_PASSIVE;
+
+        e = getaddrinfo(host, serv, &info, &head);
+        if (e != 0)
+                die_no_errno("getaddrinfo: %s", gai_strerror(e));
+
+        for (ap = head; ap != NULL; ap = ap->ai_next) {
+                fd = try_addr(ap, qsize);
+                if (fd >= 0)
+                        break;
+        }
+        freeaddrinfo(head);
+        if (fd < 0)
+                die_no_errno("could not listen at %s:%s", host, serv);
+
+        return fd;
+}
+
+static int
 try_addr(const struct addrinfo *ap, int qsize)
 {
-        int tmp = -1;
         int fd = -1;
         int y = -1;
 
@@ -167,10 +190,8 @@ try_addr(const struct addrinfo *ap, int qsize)
 
         goto ret;
 close_fd:
-        tmp = errno;
         if (close(fd) < 0)
                 die("close");
-        errno = tmp;
         fd = -1;
 ret:
         return fd;
