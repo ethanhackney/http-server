@@ -1,6 +1,6 @@
 #include "../../lib/include/util.h"
 #include "../include/req.h"
-#include "../include/lex.h"
+#include "../../parse/include/lex.h"
 #include <string.h>
 
 /* if debugging */
@@ -102,9 +102,6 @@ int
 req_free(struct req *rp)
 {
         REQ_OK(rp);
-
-        if (iobuf_free(&rp->r_buf) < 0)
-                return -1;
 
         memset(rp, 0, sizeof(*rp));
         rp->r_method = -1;
@@ -227,4 +224,14 @@ req_read(struct req *rp, char *buf, size_t sz)
         REQ_OK(rp);
 
         return iobuf_read(&rp->r_buf, buf, sz);
+}
+
+int
+req_buf_move(struct req *rp, struct res *rsp)
+{
+        REQ_OK(rp);
+
+        dbug(rsp == NULL, "rsp == NULL");
+
+        return res_set_buf(rsp, &rp->r_buf);
 }

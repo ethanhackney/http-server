@@ -1,7 +1,7 @@
 #ifndef LEX_H
 #define LEX_H
 
-#include "iobuf.h"
+#include "../../io/include/iobuf.h"
 #include <stdbool.h>
 
 /* request */

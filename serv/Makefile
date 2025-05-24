@@ -21,9 +21,10 @@ FFLAGS  = $(CFLAGS) -O3
 DFLAGS  = $(CFLAGS) -DDBUG -fsanitize=address,undefined
 SRC     = main.c 		\
 	  ../lib/src/util.c	\
-	  ../parse/src/iobuf.c 	\
-	  ../parse/src/lex.c 	\
-	  ../parse/src/req.c
+	  ../io/src/iobuf.c 	\
+	  ../parse/src/lex.c	\
+	  ../http/src/req.c	\
+	  ../http/src/res.c
 CC      = gcc
 
 safe:

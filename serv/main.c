@@ -1,7 +1,8 @@
 #include "../lib/include/util.h"
-#include "../parse/include/iobuf.h"
-#include "../parse/include/req.h"
+#include "../io/include/iobuf.h"
 #include "../parse/include/lex.h"
+#include "../http/include/req.h"
+#include "../http/include/res.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>

@@ -1,8 +1,8 @@
 #ifndef REQ_H
 #define REQ_H
 
-#include "iobuf.h"
-#include "lex.h"
+#include "../../io/include/iobuf.h"
+#include "res.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <stddef.h>
@@ -12,9 +12,9 @@ typedef struct sockaddr_storage ip_addr_t;
 
 /* misc. constants */
 enum {
-        REQ_HDR_VAL_SIZE = LEX_LEX_SIZE, /* size of header value */
-        REQ_URL_SIZE    = (1 << 12) - 1, /* url size */
-        REQ_PAY_SIZE     = (1 << 13),    /* payload size */
+        REQ_HDR_VAL_SIZE = (1 << 10) - 1, /* size of header value */
+        REQ_URL_SIZE     = (1 << 12) - 1, /* url size */
+        REQ_PAY_SIZE     = (1 << 13),     /* payload size */
 };
 
 /* methods */
@@ -151,5 +151,19 @@ const char *req_v_name(struct req *rp);
  *  @failure: -1 and errno set
  */
 ssize_t req_read(struct req *rp, char *buf, size_t sz);
+
+/**
+ * move r_buf to rs_buf:
+ *
+ * args:
+ *  @rp:  pointer to req{}
+ *  @rsp: pointer to res{}
+ *
+ * ret:
+ *  @success: 0
+ *  @failure: -1 and errno set
+ */
+int req_buf_move(struct req *rp, struct res *rsp);
+
 
 #endif /* #ifndef REQ_H */

@@ -1,6 +1,6 @@
 #include "../../lib/include/util.h"
-#include "../include/iobuf.h"
-#include "../include/req.h"
+#include "../../io/include/iobuf.h"
+#include "../../http/include/req.h"
 #include "../include/lex.h"
 #include <stdio.h>
 #include <unistd.h>

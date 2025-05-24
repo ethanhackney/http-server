@@ -19,7 +19,11 @@ CFLAGS = -Wall  		\
 	-pedantic
 FFLAGS  = $(CFLAGS) -O3
 DFLAGS  = $(CFLAGS) -DDBUG -fsanitize=address,undefined
-SRC     = main.c ../../lib/src/util.c ../src/iobuf.c ../src/lex.c ../src/req.c
+SRC     = main.c 		\
+	  ../../lib/src/util.c 	\
+	  ../../io/src/iobuf.c 	\
+	  ../../http/src/req.c	\
+	  ../src/lex.c
 CC      = gcc
 
 safe:
