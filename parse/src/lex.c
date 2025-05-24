@@ -149,19 +149,6 @@ static const struct kword *lex_hash_get(const struct kword *hash,
                                         const char *key);
 
 /**
- * string hash function:
- *
- * args:
- *  @s:   string to hash
- *  @cap: capacity of hash map
- *
- * ret:
- *  @success: hash of s
- *  @failure: does not
- */
-static size_t lex_hash(const char *s, size_t cap);
-
-/**
  * header:
  *
  * args:
@@ -513,7 +500,7 @@ lex_hash_get(const struct kword *hash, size_t cap, const char *key)
         dbug(cap == 0, "cap == 0");
         dbug(key == NULL, "key == NULL");
 
-        bkt = lex_hash(key, cap);
+        bkt = str_hash(key, cap);
         kp = &hash[bkt];
 
         if (kp->k_word == NULL)
@@ -523,22 +510,6 @@ lex_hash_get(const struct kword *hash, size_t cap, const char *key)
                 return NULL;
 
         return kp;
-}
-
-static size_t
-lex_hash(const char *s, size_t cap)
-{
-        const char *p = NULL;
-        size_t hash = 0;
-
-        dbug(s == NULL, "s == NULL");
-        dbug(cap == 0, "cap == 0");
-
-        hash = 5381;
-        for (p = s; *p != 0; p++)
-                hash = hash * 31 + (size_t)*p;
-
-        return hash % cap;
 }
 
 static void

@@ -80,6 +80,18 @@ void do_die_no_errno(const char *file,
 #define die_no_errno(_fmt, ...) \
         do_die_no_errno(__FILE__, __func__, __LINE__, _fmt, ##__VA_ARGS__)
 
+/**
+ * string hash function:
+ *
+ * args:
+ *  @s:   string to hash
+ *  @cap: capacity of hash map
+ *
+ * ret:
+ *  @success: hash of s
+ *  @failure: does not
+ */
+size_t str_hash(const char *s, size_t cap);
 
 /* if debugging */
 #ifdef DBUG

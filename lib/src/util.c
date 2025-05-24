@@ -33,3 +33,19 @@ do_die_no_errno(const char *file, const char *func, int line, const char *fmt, .
         dprintf(err, "\n");
         _exit(EXIT_FAILURE);
 }
+
+size_t
+str_hash(const char *s, size_t cap)
+{
+        const char *p = NULL;
+        size_t hash = 0;
+
+        dbug(s == NULL, "s == NULL");
+        dbug(cap == 0, "cap == 0");
+
+        hash = 5381;
+        for (p = s; *p != 0; p++)
+                hash = hash * 31 + (size_t)*p;
+
+        return hash % cap;
+}
