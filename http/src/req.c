@@ -168,8 +168,15 @@ const char *
 req_method_name(struct req *rp)
 {
         static const char *const names[REQ_METHOD_COUNT] = {
-                [REQ_METHOD_POST] = "REQ_METHOD_POST",
-                [REQ_METHOD_GET]  = "REQ_METHOD_GET",
+                [REQ_METHOD_OPTIONS] = "REQ_METHOD_OPTIONS",
+                [REQ_METHOD_CONNECT] = "REQ_METHOD_CONNECT",
+                [REQ_METHOD_DELETE]  = "REQ_METHOD_DELETE",
+                [REQ_METHOD_PATCH]   = "REQ_METHOD_PATCH",
+                [REQ_METHOD_TRACE]   = "REQ_METHOD_TRACE",
+                [REQ_METHOD_POST]    = "REQ_METHOD_POST",
+                [REQ_METHOD_HEAD]    = "REQ_METHOD_HEAD",
+                [REQ_METHOD_GET]     = "REQ_METHOD_GET",
+                [REQ_METHOD_PUT]     = "REQ_METHOD_PUT",
         };
 
         REQ_OK(rp);

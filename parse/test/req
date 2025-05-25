@@ -1,6 +1,0 @@
-POST /path/to/thing HTTP/1.1
-Host: localhost
-User-Agent: firefox
-Accept: application/json
-
-{ "addr": "127.0.0.1" }
