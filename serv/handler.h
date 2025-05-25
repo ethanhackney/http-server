@@ -3,9 +3,14 @@
 
 /* handler types */
 enum {
-        HDLR_METHOD_GET,   /* GET */
-        HDLR_METHOD_POST,  /* POST */
-        HDLR_METHOD_COUNT, /* handler count */
+        HDLR_POST,  /* POST */
+        HDLR_GET,   /* GET */
+        HDLR_COUNT, /* handler count */
+};
+
+/* invalid types */
+enum {
+        HDLR_INV = -1, /* invalid handler type */
 };
 
 #endif /* #ifndef HANDLER_H */

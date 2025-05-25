@@ -19,23 +19,23 @@ enum {
 
 /* methods */
 enum {
-        REQ_METHOD_GET,         /* GET */
-        REQ_METHOD_POST,        /* POST */
-        REQ_METHOD_COUNT,       /* method count */
+        REQ_METHOD_POST,  /* POST */
+        REQ_METHOD_GET,   /* GET */
+        REQ_METHOD_COUNT, /* method count */
 };
 
 /* versions */
 enum {
-        REQ_V_1_1,         /* HTTP/1.1 */
-        REQ_V_COUNT,       /* version count */
+        REQ_V_1_1,   /* HTTP/1.1 */
+        REQ_V_COUNT, /* version count */
 };
 
 /* header types */
 enum {
-        REQ_HDR_HOST,             /* Host */
-        REQ_HDR_USER_AGENT,       /* User-Agent */
-        REQ_HDR_ACCEPT,           /* Accept */
-        REQ_HDR_COUNT,            /* header count */
+        REQ_HDR_USER_AGENT, /* User-Agent */
+        REQ_HDR_ACCEPT,     /* Accept */
+        REQ_HDR_HOST,       /* Host */
+        REQ_HDR_COUNT,      /* header count */
 };
 
 /* invalid types */

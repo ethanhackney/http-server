@@ -15,49 +15,49 @@ enum {
 
 /* lex mode bits */
 enum {
-        LEX_MODE_FIRST,       /* on first line? */
-        LEX_MODE_HDR,         /* in header name? */
-        LEX_MODE_VAL,         /* in header value? */
-        LEX_MODE_PAY,         /* in payload? */
-        LEX_MODE_COUNT,       /* mode count */
+        LEX_MODE_FIRST, /* on first line? */
+        LEX_MODE_HDR,   /* in header name? */
+        LEX_MODE_VAL,   /* in header value? */
+        LEX_MODE_PAY,   /* in payload? */
+        LEX_MODE_COUNT, /* mode count */
 };
 
 /* token types */
 enum {
-        TT_IO_ERR,           /* io error */
-        TT_USER_AGENT,       /* User-Agent */
-        TT_FIRST_BAD,        /* token bad for first line */
-        TT_CRLF_ERR,         /* \r not followed by \n */
-        TT_BAD_CHAR,         /* invalid character */
-        TT_TOO_LONG,         /* lexeme overflow */
-        TT_BAD_HDR,          /* bad header */
-        TT_ACCEPT,           /* Accept */
-        TT_V_1_1,            /* HTTP/1.1 */
-        TT_URL,              /* url */
-        TT_HOST,             /* Host */
-        TT_POST,             /* POST */
-        TT_CHAR,             /* regular character */
-        TT_EOF,              /* end of file */
-        TT_EOL,              /* end of line */
-        TT_EOH,              /* end of headers */
-        TT_GET,              /* GET */
-        TT_VAL,              /* header value */
-        TT_COUNT,            /* token type count */
+        TT_USER_AGENT, /* User-Agent */
+        TT_FIRST_BAD,  /* token bad for first line */
+        TT_CRLF_ERR,   /* \r not followed by \n */
+        TT_BAD_CHAR,   /* invalid character */
+        TT_TOO_LONG,   /* lexeme overflow */
+        TT_BAD_HDR,    /* bad header */
+        TT_IO_ERR,     /* io error */
+        TT_ACCEPT,     /* Accept */
+        TT_V_1_1,      /* HTTP/1.1 */
+        TT_HOST,       /* Host */
+        TT_POST,       /* POST */
+        TT_CHAR,       /* regular character */
+        TT_URL,        /* url */
+        TT_EOF,        /* end of file */
+        TT_EOL,        /* end of line */
+        TT_EOH,        /* end of headers */
+        TT_GET,        /* GET */
+        TT_VAL,        /* header value */
+        TT_COUNT,      /* token type count */
 };
 
 /* token classes */
 enum {
-        CL_ERR,           /* error */
-        CL_VERSION,       /* version */
-        CL_METHOD,        /* method */
-        CL_HEADER,        /* header */
-        CL_CHAR,          /* regular character */
-        CL_URL,           /* url */
-        CL_EOF,           /* end of file */
-        CL_EOL,           /* end of line */
-        CL_EOH,           /* end of header */
-        CL_VAL,           /* header value */
-        CL_COUNT,         /* class count */
+        CL_VERSION, /* version */
+        CL_METHOD,  /* method */
+        CL_HEADER,  /* header */
+        CL_CHAR,    /* regular character */
+        CL_ERR,     /* error */
+        CL_URL,     /* url */
+        CL_EOF,     /* end of file */
+        CL_EOL,     /* end of line */
+        CL_EOH,     /* end of header */
+        CL_VAL,     /* header value */
+        CL_COUNT,   /* class count */
 };
 
 /* invalid types */
