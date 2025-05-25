@@ -40,12 +40,12 @@
         _len = strnlen((_rp)->r_url, REQ_URL_SIZE);                     \
         dbug((_rp)->r_url[_len] != 0, "rp->r_url end not null");        \
                                                                         \
-        _above = REQ_METHOD_GET <= (_rp)->r_method;                     \
+        _above = REQ_METHOD_INV < (_rp)->r_method;                      \
         _below = (_rp)->r_method < REQ_METHOD_COUNT;                    \
         _in_range = _above && _below;                                   \
         dbug(!_in_range, "rp->r_method invalid");                       \
                                                                         \
-        _above = REQ_V_1_1 <= (_rp)->r_v;                               \
+        _above = REQ_V_INV < (_rp)->r_v;                                \
         _below = (_rp)->r_v < REQ_V_COUNT;                              \
         _in_range = _above && _below;                                   \
         dbug(!_in_range, "rp->r_v invalid");                            \
@@ -150,6 +150,7 @@ req_set_method(struct req *rp, int type)
 
         REQ_OK(rp);
 
+        dbug(type <= TT_INV || type > TT_COUNT, "type is invalid");
         m = tt_to_method[type];
         dbug(m < 0, "method type invalid");
         rp->r_method = m;
@@ -195,7 +196,7 @@ req_set_v(struct req *rp, int type)
 
         REQ_OK(rp);
 
-        dbug(type < TT_IO_ERR || type > TT_COUNT, "type is invalid");
+        dbug(type <= TT_INV || type > TT_COUNT, "type is invalid");
         v = tt_to_v[type];
         dbug(v < 0, "version type invalid");
         rp->r_v = v;
@@ -259,7 +260,7 @@ req_set_hdr(struct req *rp, int hdr, const char *val)
         int i = -1;
 
         REQ_OK(rp);
-        dbug(hdr < TT_IO_ERR || hdr > TT_COUNT, "type is invalid");
+        dbug(hdr <= TT_INV || hdr > TT_COUNT, "type is invalid");
         dbug(val == NULL, "val == NULL");
 
         i = tt_to_hdr[hdr];
@@ -278,6 +279,6 @@ req_hdr_name(int type)
                 [REQ_HDR_HOST]       = "REQ_HDR_HOST",
         };
 
-        dbug(type < REQ_HDR_HOST || type > REQ_HDR_COUNT, "type is invalid");
+        dbug(type <= REQ_HDR_INV || type > REQ_HDR_COUNT, "type is invalid");
         return names[type];
 }

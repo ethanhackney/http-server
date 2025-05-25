@@ -44,17 +44,17 @@ enum {
         _len = strnlen((_lp)->l_lex, LEX_LEX_SIZE);                     \
         dbug((_lp)->l_lex[_len] != 0, "lp->l_lex not null terminated"); \
                                                                         \
-        _above = TT_IO_ERR <= (_lp)->l_type;                            \
+        _above = TT_INV < (_lp)->l_type;                                \
         _below = (_lp)->l_type < TT_COUNT;                              \
         _in_range = _above && _below;                                   \
         dbug(!_in_range, "lp->l_type is invalid");                      \
                                                                         \
-        _above = LEX_MODE_FIRST <= (_lp)->l_mode;                       \
+        _above = LEX_MODE_INV < (_lp)->l_mode;                          \
         _below = (_lp)->l_mode < LEX_MODE_COUNT;                        \
         _in_range = _above && _below;                                   \
         dbug(!_in_range, "lp->l_mode is invalid");                      \
                                                                         \
-        _above = CL_ERR <= (_lp)->l_class;                              \
+        _above = CL_INV < (_lp)->l_class;                               \
         _below = (_lp)->l_class < CL_COUNT;                             \
         _in_range = _above && _below;                                   \
         dbug(!_in_range, "lp->l_class is invalid");                     \
@@ -185,10 +185,6 @@ lex_init(struct lex *lp, int fd)
         if (iobuf_init(&lp->l_buf, fd) < 0)
                 return -1;
 
-        /* not needed, but i feel it is in bad taste to assume
-         * that 'false' is actually 0, bool is an abstraction and
-         * i would like to keep it that way
-         */
         lp->l_mode = LEX_MODE_FIRST;
         lp->l_class = CL_EOF;
         lp->l_type = TT_EOF;
@@ -367,7 +363,7 @@ lex_set_token(struct lex *lp, int type)
         bool below = false;
         bool in_range = false;
 
-        above = TT_IO_ERR <= type;
+        above = TT_INV < type;
         below = type < TT_COUNT;
         in_range = above && below;
         dbug(!in_range, "type is invalid");
