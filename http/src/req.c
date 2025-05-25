@@ -16,6 +16,7 @@
  *  @failure: exit process
  */
 #define REQ_OK(_rp) do {                                                \
+        struct iobuf _zero = {0};                                       \
         const char *_v = NULL;                                          \
         size_t _i = 0;                                                  \
         size_t _len = 0;                                                \
@@ -24,6 +25,11 @@
         bool _in_range = false;                                         \
         int _fam = -1;                                                  \
         int _ip = -1;                                                   \
+                                                                        \
+        if (memcmp(&(_rp)->r_buf, &_zero, sizeof(_zero)) == 0) {        \
+                REQ_PARSE_OK(_rp);                                      \
+                break;                                                  \
+        }                                                               \
                                                                         \
         dbug((_rp) == NULL, "rp == NULL");                              \
                                                                         \
@@ -61,25 +67,25 @@
  *  @failure: exit process
  */
 #define REQ_PARSE_OK(_rp) do {                                          \
-        const char *_v = NULL;                                          \
-        size_t _i = 0;                                                  \
-        size_t _len = 0;                                                \
-        int _fam = -1;                                                  \
-        int _ip = -1;                                                   \
+        const char *__v = NULL;                                         \
+        size_t __i = 0;                                                 \
+        size_t __len = 0;                                               \
+        int __fam = -1;                                                 \
+        int __ip = -1;                                                  \
                                                                         \
         dbug((_rp) == NULL, "rp == NULL");                              \
                                                                         \
-        _fam = (_rp)->r_addr.ss_family;                                 \
-        _ip = _fam == AF_INET || _fam == AF_INET6;                      \
-        dbug(!_ip, "rp->r_addr not ip");                                \
+        __fam = (_rp)->r_addr.ss_family;                                \
+        __ip = __fam == AF_INET || __fam == AF_INET6;                   \
+        dbug(!__ip, "rp->r_addr not ip");                               \
                                                                         \
-        _len = strnlen((_rp)->r_url, REQ_URL_SIZE);                     \
-        dbug((_rp)->r_url[_len] != 0, "rp->r_url end not null");        \
+        __len = strnlen((_rp)->r_url, REQ_URL_SIZE);                    \
+        dbug((_rp)->r_url[__len] != 0, "rp->r_url end not null");       \
                                                                         \
-        for (_i = REQ_HDR_HOST; _i < REQ_HDR_COUNT; _i++) {             \
-                _v = (_rp)->r_hdr[_i];                                  \
-                _len = strnlen(_v, REQ_HDR_VAL_SIZE);                   \
-                dbug(_v[_len] != 0, "rp->r_hdr end not null");          \
+        for (__i = REQ_HDR_HOST; __i < REQ_HDR_COUNT; __i++) {          \
+                __v = (_rp)->r_hdr[__i];                                \
+                __len = strnlen(__v, REQ_HDR_VAL_SIZE);                 \
+                dbug(__v[__len] != 0, "rp->r_hdr end not null");        \
         }                                                               \
 } while (0)
 #else
@@ -140,14 +146,9 @@ req_set_method(struct req *rp, int type)
                 [TT_EOH]        = -1,
                 [TT_EOF]        = -1,
         };
-        struct iobuf zero = {0};
         int m = -1;
 
-        if (memcmp(&rp->r_buf, &zero, sizeof(zero)) == 0) {
-                REQ_PARSE_OK(rp);
-        } else {
-                REQ_OK(rp);
-        }
+        REQ_OK(rp);
 
         m = tt_to_method[type];
         dbug(m < 0, "method type invalid");
@@ -190,15 +191,11 @@ req_set_v(struct req *rp, int type)
                 [TT_EOH]        = -1,
                 [TT_EOF]        = -1,
         };
-        struct iobuf zero = {0};
         int v = -1;
 
-        if (memcmp(&rp->r_buf, &zero, sizeof(zero)) == 0) {
-                REQ_PARSE_OK(rp);
-        } else {
-                REQ_OK(rp);
-        }
+        REQ_OK(rp);
 
+        dbug(type < TT_IO_ERR || type > TT_COUNT, "type is invalid");
         v = tt_to_v[type];
         dbug(v < 0, "version type invalid");
         rp->r_v = v;
@@ -234,4 +231,53 @@ req_buf_move(struct req *rp, struct res *rsp)
         dbug(rsp == NULL, "rsp == NULL");
 
         return res_set_buf(rsp, &rp->r_buf);
+}
+
+int
+req_set_hdr(struct req *rp, int hdr, const char *val)
+{
+        static const int tt_to_hdr[TT_COUNT] = {
+                [TT_USER_AGENT] = REQ_HDR_USER_AGENT,
+                [TT_FIRST_BAD]  = -1,
+                [TT_TOO_LONG]   = -1,
+                [TT_CRLF_ERR]   = -1,
+                [TT_BAD_CHAR]   = -1,
+                [TT_BAD_HDR]    = -1,
+                [TT_ACCEPT]     = REQ_HDR_ACCEPT,
+                [TT_IO_ERR]     = -1,
+                [TT_V_1_1]      = -1,
+                [TT_CHAR]       = -1,
+                [TT_HOST]       = REQ_HDR_HOST,
+                [TT_URL]        = -1,
+                [TT_POST]       = -1,
+                [TT_GET]        = -1,
+                [TT_VAL]        = -1,
+                [TT_EOL]        = -1,
+                [TT_EOH]        = -1,
+                [TT_EOF]        = -1,
+        };
+        int i = -1;
+
+        REQ_OK(rp);
+        dbug(hdr < TT_IO_ERR || hdr > TT_COUNT, "type is invalid");
+        dbug(val == NULL, "val == NULL");
+
+        i = tt_to_hdr[hdr];
+        dbug(i == -1, "hdr is invalid");
+        strncpy(rp->r_hdr[i], val, REQ_HDR_VAL_SIZE);
+        rp->r_hdr[i][REQ_HDR_VAL_SIZE] = 0;
+        return 0;
+}
+
+const char *
+req_hdr_name(int type)
+{
+        static const char *const names[REQ_HDR_COUNT] = {
+                [REQ_HDR_USER_AGENT] = "REQ_HDR_USER_AGENT",
+                [REQ_HDR_ACCEPT]     = "REQ_HDR_ACCEPT",
+                [REQ_HDR_HOST]       = "REQ_HDR_HOST",
+        };
+
+        dbug(type < REQ_HDR_HOST || type > REQ_HDR_COUNT, "type is invalid");
+        return names[type];
 }

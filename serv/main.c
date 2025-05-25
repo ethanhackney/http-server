@@ -213,8 +213,11 @@ sig_reap(int sig)
 static void
 handler(int fd, struct sockaddr_storage *sp)
 {
+        const char *v = NULL;
         struct req req = {0};
         struct lex lex = {0};
+        int hdr = -1;
+        int i = -1;
         int c = -1;
 
         if (lex_init(&lex, fd) < 0) {
@@ -234,6 +237,13 @@ handler(int fd, struct sockaddr_storage *sp)
                         req_set_v(&req, lex_type(&lex));
                 if (c == CL_URL)
                         strcpy(req.r_url, lex_lex(&lex));
+                if (c == CL_HEADER) {
+                        hdr = lex_type(&lex);
+                        lex_next(&lex);
+                        c = lex_class(&lex);
+                        if (c == CL_VAL)
+                                req_set_hdr(&req, hdr, lex_lex(&lex));
+                }
                 lex_next(&lex);
         }
         if (c != CL_EOH) {
@@ -245,6 +255,15 @@ handler(int fd, struct sockaddr_storage *sp)
         printf("method:  %s\n", req_method_name(&req));
         printf("version: %s\n", req_v_name(&req));
         printf("url:     %s\n", req.r_url);
+
+        printf("headers: [\n");
+        for (i = REQ_HDR_HOST; i < REQ_HDR_COUNT; i++) {
+                v = req.r_hdr[i];
+                if (*v == 0)
+                        continue;
+                printf("\t\"%s\": \"%s\",\n", req_hdr_name(i), v);
+        }
+        printf("]\n");
 
         lex_buf_move(&lex, &req);
         writen(fd, "HTTP/1.1 200 OK\r\n", 17);

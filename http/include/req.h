@@ -19,14 +19,14 @@ enum {
 
 /* methods */
 enum {
-        REQ_METHOD_GET,   /* (must be first) GET */
+        REQ_METHOD_GET,   /* GET (must be first) */
         REQ_METHOD_POST,  /* POST */
         REQ_METHOD_COUNT, /* method count */
 };
 
 /* versions */
 enum {
-        REQ_V_1_1,   /* (must be first) HTTP/1.1 */
+        REQ_V_1_1,   /* HTTP/1.1 (must be first) */
         REQ_V_COUNT, /* version count */
 };
 
@@ -165,5 +165,30 @@ ssize_t req_read(struct req *rp, char *buf, size_t sz);
  */
 int req_buf_move(struct req *rp, struct res *rsp);
 
+/**
+ * set header:
+ *
+ * args:
+ *  @rp:  pointer to req{}
+ *  @hdr: header
+ *  @val: value
+ *
+ * ret:
+ *  @success: 0
+ *  @failure: -1 and errno set
+ */
+int req_set_hdr(struct req *rp, int hdr, const char *val);
+
+/**
+ * get name of header:
+ *
+ * args:
+ *  @type: header type
+ *
+ * ret:
+ *  @success: string
+ *  @failure: does not
+ */
+const char *req_hdr_name(int type);
 
 #endif /* #ifndef REQ_H */
