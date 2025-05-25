@@ -443,9 +443,6 @@ lex_crlf(struct lex *lp)
 static void
 lex_first(struct lex *lp)
 {
-        static const struct kword version_hash[HASH_VERSION_SIZE] = {
-                [0] = { "HTTP/1.1", TT_V_1_1 },
-        };
         const struct kword *kp = NULL;
         char *p = NULL;
         char c = -1;
@@ -484,7 +481,7 @@ lex_first(struct lex *lp)
                 return;
         }
 
-        kp = lex_hash_get(version_hash, HASH_VERSION_SIZE, p);
+        kp = lex_hash_get(version_hash, version_hash_cap, p);
         if (kp != NULL) {
                 lex_set_token(lp, kp->k_type);
                 return;
@@ -518,11 +515,6 @@ lex_hash_get(const struct kword *hash, size_t cap, const char *key)
 static void
 lex_hdr(struct lex *lp)
 {
-        static const struct kword hdr_hash[HASH_HEADER_SIZE] = {
-                [1] = { "User-Agent", TT_USER_AGENT },
-                [3] = { "Accept",     TT_ACCEPT     },
-                [0] = { "Host",       TT_HOST       },
-        };
         const struct kword *kp = NULL;
         char *p = NULL;
         char c = -1;
@@ -548,7 +540,7 @@ lex_hdr(struct lex *lp)
                 return;
         }
 
-        kp = lex_hash_get(hdr_hash, HASH_HEADER_SIZE, lp->l_lex);
+        kp = lex_hash_get(hdr_hash, hdr_hash_cap, lp->l_lex);
         if (kp != NULL) {
                 lp->l_mode = LEX_MODE_VAL;
                 lex_set_token(lp, kp->k_type);

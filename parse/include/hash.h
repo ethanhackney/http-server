@@ -1,6 +1,15 @@
 #ifndef LEX_HASH_H
 #define LEX_HASH_H
 
+static const struct kword hdr_hash[5] = {
+	{ "Host", TT_HOST },
+	{ "User-Agent", TT_USER_AGENT },
+	{ NULL },
+	{ "Accept", TT_ACCEPT },
+	{ NULL },
+};
+static const size_t hdr_hash_cap = 5;
+
 static const struct kword method_hash[15] = {
 	{ "HEAD", TT_HEAD },
 	{ NULL },
@@ -19,5 +28,10 @@ static const struct kword method_hash[15] = {
 	{ NULL },
 };
 static const size_t method_hash_cap = 15;
+
+static const struct kword version_hash[1] = {
+	{ "HTTP/1.1", TT_V_1_1 },
+};
+static const size_t version_hash_cap = 1;
 
 #endif /* LEX_HASH_H */
