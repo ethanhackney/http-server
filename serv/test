@@ -1,0 +1,20 @@
+#!/bin/bash
+
+methods=(
+  GET
+  POST
+  PUT
+  PATCH
+  DELETE
+  HEAD
+  OPTIONS
+  CONNECT
+  TRACE
+)
+for m in "${methods[@]}"; do
+  res="$(curl -X "$m" localhost:8080 2>/dev/null)"
+  if [ "$res" != "hello world" ]; then
+    echo "$m method failed"
+    exit 1
+  fi
+done
