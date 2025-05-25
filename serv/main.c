@@ -257,7 +257,7 @@ handler(int fd, struct sockaddr_storage *sp)
         printf("url:     %s\n", req.r_url);
 
         printf("headers: [\n");
-        for (i = REQ_HDR_HOST; i < REQ_HDR_COUNT; i++) {
+        for (i = REQ_HDR_USER_AGENT; i < REQ_HDR_COUNT; i++) {
                 v = req.r_hdr[i];
                 if (*v == 0)
                         continue;

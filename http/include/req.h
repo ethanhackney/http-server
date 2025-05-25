@@ -19,9 +19,16 @@ enum {
 
 /* methods */
 enum {
-        REQ_METHOD_POST,  /* POST */
-        REQ_METHOD_GET,   /* GET */
-        REQ_METHOD_COUNT, /* method count */
+        REQ_METHOD_OPTIONS, /* OPTIONS */
+        REQ_METHOD_CONNECT, /* CONNECT */
+        REQ_METHOD_DELETE,  /* DELETE */
+        REQ_METHOD_PATCH,   /* PATCH */
+        REQ_METHOD_TRACE,   /* TRACE */
+        REQ_METHOD_POST,    /* POST */
+        REQ_METHOD_HEAD,    /* HEAD */
+        REQ_METHOD_GET,     /* GET */
+        REQ_METHOD_PUT,     /* PUT */
+        REQ_METHOD_COUNT,   /* method count */
 };
 
 /* versions */

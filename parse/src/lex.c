@@ -72,6 +72,7 @@ struct kword {
         const char *const k_word; /* word */
         const int         k_type; /* token type */
 };
+#include "../include/hash.h"
 
 /**
  * get next char:
@@ -226,12 +227,19 @@ lex_type_name(struct lex *lp)
                 [TT_CRLF_ERR]   = "TT_CRLF_ERR",
                 [TT_BAD_CHAR]   = "TT_BAD_CHAR",
                 [TT_BAD_HDR]    = "TT_BAD_HDR",
+                [TT_CONNECT]    = "TT_CONNECT",
+                [TT_OPTIONS]    = "TT_OPTIONS",
                 [TT_ACCEPT]     = "TT_ACCEPT",
+                [TT_DELETE]     = "TT_DELETE",
                 [TT_IO_ERR]     = "TT_IO_ERR",
                 [TT_V_1_1]      = "TT_V_1_1",
+                [TT_PATCH]      = "TT_PATCH",
+                [TT_TRACE]      = "TT_TRACE",
+                [TT_HEAD]       = "TT_HEAD",
                 [TT_CHAR]       = "TT_CHAR",
                 [TT_HOST]       = "TT_HOST",
                 [TT_POST]       = "TT_POST",
+                [TT_PUT]        = "TT_PUT",
                 [TT_URL]        = "TT_URL",
                 [TT_GET]        = "TT_GET",
                 [TT_VAL]        = "TT_VAL",
@@ -247,7 +255,7 @@ lex_type_name(struct lex *lp)
 const char *
 lex_class_name(struct lex *lp)
 {
-        static const char *const names[TT_COUNT] = {
+        static const char *const names[CL_COUNT] = {
                 [CL_METHOD]  = "CL_METHOD",
                 [CL_VERSION] = "CL_VERSION",
                 [CL_HEADER]  = "CL_HEADER",
@@ -374,13 +382,20 @@ lex_set_token(struct lex *lp, int type)
                 [TT_TOO_LONG]   = CL_ERR,
                 [TT_BAD_CHAR]   = CL_ERR,
                 [TT_CRLF_ERR]   = CL_ERR,
+                [TT_CONNECT]    = CL_METHOD,
                 [TT_BAD_HDR]    = CL_ERR,
+                [TT_OPTIONS]    = CL_METHOD,
                 [TT_ACCEPT]     = CL_HEADER,
                 [TT_IO_ERR]     = CL_ERR,
+                [TT_DELETE]     = CL_METHOD,
                 [TT_V_1_1]      = CL_VERSION,
+                [TT_TRACE]      = CL_METHOD,
+                [TT_PATCH]      = CL_METHOD,
                 [TT_HOST]       = CL_HEADER,
                 [TT_POST]       = CL_METHOD,
                 [TT_CHAR]       = CL_CHAR,
+                [TT_HEAD]       = CL_METHOD,
+                [TT_PUT]        = CL_METHOD,
                 [TT_URL]        = CL_URL,
                 [TT_GET]        = CL_METHOD,
                 [TT_EOL]        = CL_EOL,
@@ -428,10 +443,6 @@ lex_crlf(struct lex *lp)
 static void
 lex_first(struct lex *lp)
 {
-        static const struct kword method_hash[HASH_METHOD_SIZE] = {
-                [0] = { "GET",  TT_GET },
-                [2] = { "POST", TT_POST },
-        };
         static const struct kword version_hash[HASH_VERSION_SIZE] = {
                 [0] = { "HTTP/1.1", TT_V_1_1 },
         };
@@ -467,7 +478,7 @@ lex_first(struct lex *lp)
                 return;
         }
 
-        kp = lex_hash_get(method_hash, HASH_METHOD_SIZE, p);
+        kp = lex_hash_get(method_hash, method_hash_cap, p);
         if (kp != NULL) {
                 lex_set_token(lp, kp->k_type);
                 return;

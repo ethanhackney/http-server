@@ -30,12 +30,19 @@ enum {
         TT_BAD_CHAR,   /* invalid character */
         TT_TOO_LONG,   /* lexeme overflow */
         TT_BAD_HDR,    /* bad header */
+        TT_CONNECT,    /* CONNECT */
+        TT_OPTIONS,    /* OPTIONS */
         TT_IO_ERR,     /* io error */
         TT_ACCEPT,     /* Accept */
+        TT_DELETE,     /* DELETE */
+        TT_TRACE,      /* TRACE */
         TT_V_1_1,      /* HTTP/1.1 */
+        TT_PATCH,      /* PATCH */
+        TT_HEAD,       /* HEAD */
         TT_HOST,       /* Host */
         TT_POST,       /* POST */
         TT_CHAR,       /* regular character */
+        TT_PUT,        /* PUT */
         TT_URL,        /* url */
         TT_EOF,        /* end of file */
         TT_EOL,        /* end of line */

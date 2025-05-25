@@ -18,18 +18,9 @@ CFLAGS = -Wall  		\
 	-Wno-unused-parameter   \
 	-pedantic
 FFLAGS  = $(CFLAGS) -O3
-DFLAGS  = $(CFLAGS) -DDBUG -fsanitize=address,undefined
-SRC     = main.c 		\
-	  ../lib/src/util.c	\
-	  ../io/src/iobuf.c 	\
-	  ../parse/src/lex.c	\
-	  ../http/src/req.c	\
-	  ../http/src/res.c
+LIB     = -shared -fPIC -o lib.so
+SRC     = ../../lib/src/util.c
 CC      = gcc
 
-safe:
-	./perf/perf
-	$(CC) $(DFLAGS) $(SRC)
-
-fast:
-	$(CC) $(FFLAGS) $(SRC)
+main:
+	$(CC) $(FFLAGS) $(LIB) $(SRC)

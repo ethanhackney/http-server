@@ -1,0 +1,12 @@
+#!/bin/bash
+
+cd ../tool/perf
+
+if ! [ -f 'lib.so' ]; then
+  make
+fi
+
+./main.py --name "LEX_HASH" ../../serv/perf/*.tab | \
+  sed 's/__STRUCT__/kword/g' >hash.h
+
+mv hash.h ../../parse/include/
