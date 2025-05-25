@@ -13,6 +13,15 @@ enum {
         LEX_EOF      = IOBUF_EOF,     /* end of file */
 };
 
+/* lex mode bits */
+enum {
+        LEX_MODE_FIRST, /* on first line? (must be first) */
+        LEX_MODE_HDR,   /* in header name? */
+        LEX_MODE_VAL,   /* in header value? */
+        LEX_MODE_PAY,   /* in payload? */
+        LEX_MODE_COUNT, /* mode count */
+};
+
 /* token types */
 enum {
         TT_IO_ERR,     /* io error (must be first) */
@@ -56,10 +65,7 @@ struct lex {
         struct iobuf l_buf;                   /* private: io buffer */
         char         l_lex[LEX_LEX_SIZE + 1]; /* private: lexeme */
         char         l_back;                  /* private: putback char */
-        bool         l_first;                 /* private: on first line? */
-        bool         l_hdr;                   /* private: in header name? */
-        bool         l_val;                   /* private: in header value? */
-        bool         l_pay;                   /* private: in payload? */
+        int          l_mode;                  /* private: mode */
         int          l_last;                  /* private: last token type */
         int          l_class;                 /* private: token class */
         int          l_type;                  /* private: token type */

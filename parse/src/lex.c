@@ -49,13 +49,15 @@ enum {
         _in_range = _above && _below;                                   \
         dbug(!_in_range, "lp->l_type is invalid");                      \
                                                                         \
+        _above = LEX_MODE_FIRST <= (_lp)->l_mode;                       \
+        _below = (_lp)->l_mode < LEX_MODE_COUNT;                        \
+        _in_range = _above && _below;                                   \
+        dbug(!_in_range, "lp->l_mode is invalid");                      \
+                                                                        \
         _above = CL_ERR <= (_lp)->l_class;                              \
         _below = (_lp)->l_class < CL_COUNT;                             \
         _in_range = _above && _below;                                   \
         dbug(!_in_range, "lp->l_class is invalid");                     \
-                                                                        \
-        if ((_lp)->l_pay)                                               \
-                break;                                                  \
                                                                         \
         dbug((_lp)->l_back < 0, "lp->l_back < 0");                      \
 } while (0)
@@ -187,11 +189,7 @@ lex_init(struct lex *lp, int fd)
          * that 'false' is actually 0, bool is an abstraction and
          * i would like to keep it that way
          */
-        lp->l_hdr = false;
-        lp->l_val = false;
-        lp->l_pay = false;
-
-        lp->l_first = true;
+        lp->l_mode = LEX_MODE_FIRST;
         lp->l_class = CL_EOF;
         lp->l_type = TT_EOF;
 
@@ -277,7 +275,7 @@ lex_next(struct lex *lp)
 
         LEX_OK(lp);
 
-        if (lp->l_pay) {
+        if (lp->l_mode == LEX_MODE_PAY) {
                 lex_not_special(lp);
                 return;
         }
@@ -300,17 +298,17 @@ again:
 
         lp->l_back = c;
 
-        if (lp->l_val) {
+        if (lp->l_mode == LEX_MODE_VAL) {
                 lex_val(lp);
                 return;
         }
 
-        if (lp->l_first) {
+        if (lp->l_mode == LEX_MODE_FIRST) {
                 lex_first(lp);
                 return;
         }
 
-        if (lp->l_hdr) {
+        if (lp->l_mode == LEX_MODE_HDR) {
                 lex_hdr(lp);
                 return;
         }
@@ -423,12 +421,10 @@ lex_crlf(struct lex *lp)
         if (c != '\n') {
                 lex_set_token(lp, TT_CRLF_ERR);
         } else if (lp->l_last == TT_EOL) {
-                lp->l_hdr = false;
-                lp->l_pay = true;
+                lp->l_mode = LEX_MODE_PAY;
                 lex_set_token(lp, TT_EOH);
         } else {
-                lp->l_first = false;
-                lp->l_hdr = true;
+                lp->l_mode = LEX_MODE_HDR;
                 lex_set_token(lp, TT_EOL);
         }
 }
@@ -547,8 +543,7 @@ lex_hdr(struct lex *lp)
 
         kp = lex_hash_get(hdr_hash, HASH_HEADER_SIZE, lp->l_lex);
         if (kp != NULL) {
-                lp->l_hdr = false;
-                lp->l_val = true;
+                lp->l_mode = LEX_MODE_VAL;
                 lex_set_token(lp, kp->k_type);
                 return;
         }
@@ -583,8 +578,7 @@ lex_val(struct lex *lp)
                 return;
         }
 
-        lp->l_val = false;
-        lp->l_hdr = true;
+        lp->l_mode = LEX_MODE_HDR;
         lex_set_token(lp, TT_VAL);
 }
 
