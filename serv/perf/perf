@@ -1,10 +1,16 @@
 #!/bin/bash
 
 cd ../tool/perf
-make
+if ! make; then
+  echo "$(basename $0): make failed"
+  exit 1
+fi
 
 ./main.py --name "LEX_HASH" ../../serv/perf/*.tab | \
   sed 's/__STRUCT__/kword/g' >hash.h
+if [ $? -ne 0 ]; then
+  exit 1
+fi
 
 mv hash.h ../../parse/include/
 rm lib.so
