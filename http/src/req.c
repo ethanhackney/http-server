@@ -89,9 +89,8 @@
         }                                                               \
 } while (0)
 #else
-#define REQ_OK(_rp) do {        \
-        /* no-op */             \
-} while (0)
+#define REQ_OK(_rp)       /* no-op */
+#define REQ_PARSE_OK(_rp) /* no-op */
 #endif /* #ifdef DBUG */
 
 int

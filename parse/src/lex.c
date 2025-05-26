@@ -62,9 +62,7 @@ enum {
         dbug((_lp)->l_back < 0, "lp->l_back < 0");                      \
 } while (0)
 #else
-#define LEX_OK(_lp) do {        \
-        /* no-op */             \
-} while (0)
+#define LEX_OK(_lp) /* no-op */
 #endif /* #ifdef DBUG */
 
 /* keyword */

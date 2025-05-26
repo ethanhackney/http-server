@@ -41,9 +41,7 @@
         }                                                               \
 } while (0)
 #else
-#define RES_OK(_rp) do {        \
-        /* no-op */             \
-} while (0)
+#define RES_OK(_rp) /* no-op */
 #endif /* #ifdef DBUG */
 
 int

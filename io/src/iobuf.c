@@ -42,9 +42,7 @@
         dbug(!_in_range, "ip->i_outp not in ip->i_out");                \
 } while (0)
 #else
-#define IOBUF_OK(_ip) do {      \
-        /* no-op */             \
-} while (0)
+#define IOBUF_OK(_ip) /* no-op */
 #endif /* #ifdef DBUG */
 
 /**
