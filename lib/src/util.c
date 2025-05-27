@@ -40,8 +40,10 @@ str_hash(const char *s, size_t cap)
         const char *p = NULL;
         size_t hash = 0;
 
+#ifdef DBUG
         dbug(s == NULL, "s == NULL");
         dbug(cap == 0, "cap == 0");
+#endif
 
         hash = 5381;
         for (p = s; *p != 0; p++)

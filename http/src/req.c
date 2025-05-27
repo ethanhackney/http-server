@@ -88,16 +88,33 @@
                 dbug(__v[__len] != 0, "rp->r_hdr end not null");        \
         }                                                               \
 } while (0)
+
+/**
+ * do dbug:
+ *
+ * args:
+ *  @_cond: condition
+ *  @_fmt:  format string
+ *  @...:   arguments
+ *
+ * ret:
+ *  @success: nothing
+ *  @failure: exit process
+ */
+#define REQ_DBUG(_cond, _fmt, ...) \
+        dbug(_cond, _fmt, ##__VA_ARGS__)
+
 #else
-#define REQ_OK(_rp)       /* no-op */
-#define REQ_PARSE_OK(_rp) /* no-op */
+#define REQ_OK(_rp)                /* no-op */
+#define REQ_PARSE_OK(_rp)          /* no-op */
+#define REQ_DBUG(_cond, _fmt, ...) /* no-op */
 #endif /* #ifdef DBUG */
 
 int
 req_init(struct req *rp, const struct sockaddr_storage *sp)
 {
-        dbug(rp == NULL, "rp == NULL");
-        dbug(sp == NULL, "sp == NULL");
+        REQ_DBUG(rp == NULL, "rp == NULL");
+        REQ_DBUG(sp == NULL, "sp == NULL");
         memset(rp, 0, sizeof(*rp));
         memcpy(&rp->r_addr, sp, sizeof(*sp));
         return 0;
@@ -116,7 +133,7 @@ req_free(struct req *rp)
 int
 req_set_buf(struct req *rp, struct iobuf *ip)
 {
-        dbug(ip == NULL, "ip == NULL");
+        REQ_DBUG(ip == NULL, "ip == NULL");
         REQ_OK(rp);
         iobuf_move(&rp->r_buf, ip);
         return 0;
@@ -156,9 +173,9 @@ req_set_method(struct req *rp, int type)
 
         REQ_OK(rp);
 
-        dbug(type <= TT_INV || type > TT_COUNT, "type is invalid");
+        REQ_DBUG(type <= TT_INV || type > TT_COUNT, "type is invalid");
         m = tt_to_method[type];
-        dbug(m < 0, "method type invalid");
+        REQ_DBUG(m < 0, "method type invalid");
         rp->r_method = m;
         return 0;
 }
@@ -209,9 +226,9 @@ req_set_v(struct req *rp, int type)
 
         REQ_OK(rp);
 
-        dbug(type <= TT_INV || type > TT_COUNT, "type is invalid");
+        REQ_DBUG(type <= TT_INV || type > TT_COUNT, "type is invalid");
         v = tt_to_v[type];
-        dbug(v < 0, "version type invalid");
+        REQ_DBUG(v < 0, "version type invalid");
         rp->r_v = v;
         return 0;
 }
@@ -230,8 +247,8 @@ req_v_name(struct req *rp)
 ssize_t
 req_read(struct req *rp, char *buf, size_t sz)
 {
-        dbug(buf == NULL, "buf == NULL");
-        dbug(sz == 0, "sz == 0");
+        REQ_DBUG(buf == NULL, "buf == NULL");
+        REQ_DBUG(sz == 0, "sz == 0");
         REQ_OK(rp);
 
         return iobuf_read(&rp->r_buf, buf, sz);
@@ -242,7 +259,7 @@ req_buf_move(struct req *rp, struct res *rsp)
 {
         REQ_OK(rp);
 
-        dbug(rsp == NULL, "rsp == NULL");
+        REQ_DBUG(rsp == NULL, "rsp == NULL");
 
         return res_set_buf(rsp, &rp->r_buf);
 }
@@ -273,11 +290,11 @@ req_set_hdr(struct req *rp, int hdr, const char *val)
         int i = -1;
 
         REQ_OK(rp);
-        dbug(hdr <= TT_INV || hdr > TT_COUNT, "type is invalid");
-        dbug(val == NULL, "val == NULL");
+        REQ_DBUG(hdr <= TT_INV || hdr > TT_COUNT, "type is invalid");
+        REQ_DBUG(val == NULL, "val == NULL");
 
         i = tt_to_hdr[hdr];
-        dbug(i == -1, "hdr is invalid");
+        REQ_DBUG(i == -1, "hdr is invalid");
         strncpy(rp->r_hdr[i], val, REQ_HDR_VAL_SIZE);
         rp->r_hdr[i][REQ_HDR_VAL_SIZE] = 0;
         return 0;
@@ -292,6 +309,7 @@ req_hdr_name(int type)
                 [REQ_HDR_HOST]       = "REQ_HDR_HOST",
         };
 
-        dbug(type <= REQ_HDR_INV || type > REQ_HDR_COUNT, "type is invalid");
+        REQ_DBUG(type <= REQ_HDR_INV || type > REQ_HDR_COUNT,
+                 "type is invalid");
         return names[type];
 }
