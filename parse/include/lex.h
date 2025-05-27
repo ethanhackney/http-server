@@ -38,6 +38,7 @@ enum {
         TT_TRACE,      /* TRACE */
         TT_V_1_1,      /* HTTP/1.1 */
         TT_PATCH,      /* PATCH */
+        TT_A_IM,       /* A-IM */
         TT_HEAD,       /* HEAD */
         TT_HOST,       /* Host */
         TT_POST,       /* POST */

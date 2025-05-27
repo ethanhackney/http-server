@@ -1,14 +1,15 @@
 #ifndef LEX_HASH_H
 #define LEX_HASH_H
 
-static const struct kword hdr_hash[5] = {
-	{ "Host", TT_HOST },
+static const struct kword hdr_hash[6] = {
 	{ "User-Agent", TT_USER_AGENT },
+	{ "A-IM", TT_A_IM },
 	{ NULL },
 	{ "Accept", TT_ACCEPT },
 	{ NULL },
+	{ "Host", TT_HOST },
 };
-static const size_t hdr_hash_cap = 5;
+static const size_t hdr_hash_cap = 6;
 
 static const struct kword method_hash[15] = {
 	{ "HEAD", TT_HEAD },

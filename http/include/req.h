@@ -41,6 +41,7 @@ enum {
 enum {
         REQ_HDR_USER_AGENT, /* User-Agent */
         REQ_HDR_ACCEPT,     /* Accept */
+        REQ_HDR_A_IM,       /* A-IM */
         REQ_HDR_HOST,       /* Host */
         REQ_HDR_COUNT,      /* header count */
 };

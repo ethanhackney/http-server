@@ -260,6 +260,7 @@ req_set_hdr(struct req *rp, int hdr, const char *val)
                 [TT_ACCEPT]     = REQ_HDR_ACCEPT,
                 [TT_IO_ERR]     = -1,
                 [TT_V_1_1]      = -1,
+                [TT_A_IM]       = REQ_HDR_A_IM,
                 [TT_CHAR]       = -1,
                 [TT_HOST]       = REQ_HDR_HOST,
                 [TT_URL]        = -1,
@@ -289,6 +290,7 @@ req_hdr_name(int type)
         static const char *const names[REQ_HDR_COUNT] = {
                 [REQ_HDR_USER_AGENT] = "REQ_HDR_USER_AGENT",
                 [REQ_HDR_ACCEPT]     = "REQ_HDR_ACCEPT",
+                [REQ_HDR_A_IM]       = "REQ_HDR_A_IM",
                 [REQ_HDR_HOST]       = "REQ_HDR_HOST",
         };
 
