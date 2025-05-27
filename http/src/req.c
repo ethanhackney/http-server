@@ -26,12 +26,12 @@
         int _fam = -1;                                                  \
         int _ip = -1;                                                   \
                                                                         \
+        dbug((_rp) == NULL, "rp == NULL");                              \
+                                                                        \
         if (memcmp(&(_rp)->r_buf, &_zero, sizeof(_zero)) == 0) {        \
                 REQ_PARSE_OK(_rp);                                      \
                 break;                                                  \
         }                                                               \
-                                                                        \
-        dbug((_rp) == NULL, "rp == NULL");                              \
                                                                         \
         _fam = (_rp)->r_addr.ss_family;                                 \
         _ip = _fam == AF_INET || _fam == AF_INET6;                      \
