@@ -173,7 +173,7 @@ req_set_method(struct req *rp, int type)
 
         REQ_OK(rp);
 
-        REQ_DBUG(type <= TT_INV || type > TT_COUNT, "type is invalid");
+        REQ_DBUG(type <= TT_INV || type >= TT_COUNT, "type is invalid");
         m = tt_to_method[type];
         REQ_DBUG(m < 0, "method type invalid");
         rp->r_method = m;
@@ -226,7 +226,7 @@ req_set_v(struct req *rp, int type)
 
         REQ_OK(rp);
 
-        REQ_DBUG(type <= TT_INV || type > TT_COUNT, "type is invalid");
+        REQ_DBUG(type <= TT_INV || type >= TT_COUNT, "type is invalid");
         v = tt_to_v[type];
         REQ_DBUG(v < 0, "version type invalid");
         rp->r_v = v;
@@ -290,7 +290,7 @@ req_set_hdr(struct req *rp, int hdr, const char *val)
         int i = -1;
 
         REQ_OK(rp);
-        REQ_DBUG(hdr <= TT_INV || hdr > TT_COUNT, "type is invalid");
+        REQ_DBUG(hdr <= TT_INV || hdr >= TT_COUNT, "type is invalid");
         REQ_DBUG(val == NULL, "val == NULL");
 
         i = tt_to_hdr[hdr];
@@ -309,7 +309,7 @@ req_hdr_name(int type)
                 [REQ_HDR_HOST]       = "REQ_HDR_HOST",
         };
 
-        REQ_DBUG(type <= REQ_HDR_INV || type > REQ_HDR_COUNT,
+        REQ_DBUG(type <= REQ_HDR_INV || type >= REQ_HDR_COUNT,
                  "type is invalid");
         return names[type];
 }
