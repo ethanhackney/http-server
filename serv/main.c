@@ -232,7 +232,7 @@ handler(int fd, struct sockaddr_storage *sp)
 
         while ((c = lex_class(&lex)) != CL_EOF && c != CL_ERR && c != CL_EOH) {
                 if (c == CL_METHOD)
-                        req_set_method(NULL, lex_type(&lex));
+                        req_set_method(&req, lex_type(&lex));
                 if (c == CL_VERSION)
                         req_set_v(&req, lex_type(&lex));
                 if (c == CL_URL)

@@ -41,25 +41,8 @@
         _in_range = _above && _below;                                   \
         dbug(!_in_range, "ip->i_outp not in ip->i_out");                \
 } while (0)
-
-/**
- * do dbug:
- *
- * args:
- *  @_cond: condition
- *  @_fmt:  format string
- *  @...:   arguments
- *
- * ret:
- *  @success: nothing
- *  @failure: exit process
- */
-#define IOBUF_DBUG(_cond, _fmt, ...) \
-        dbug(_cond, _fmt, ##__VA_ARGS__)
-
 #else
-#define IOBUF_OK(_ip)                /* no-op */
-#define IOBUF_DBUG(_cond, _fmt, ...) /* no-op */
+#define IOBUF_OK(_ip) /* no-op */
 #endif /* #ifdef DBUG */
 
 /**
@@ -101,8 +84,8 @@ static int iobuf_full(const struct iobuf *ip);
 int
 iobuf_init(struct iobuf *ip, int fd)
 {
-        IOBUF_DBUG(ip == NULL, "ip == NULL");
-        IOBUF_DBUG(fd < 0, "fd < 0");
+        dbug(ip == NULL, "ip == NULL");
+        dbug(fd < 0, "fd < 0");
 
         memset(ip, 0, sizeof(*ip));
         ip->i_inp = ip->i_in;
@@ -178,7 +161,7 @@ again:
 void
 iobuf_move(struct iobuf *dst, struct iobuf *src)
 {
-        IOBUF_DBUG(dst == NULL, "dst == NULL");
+        dbug(dst == NULL, "dst == NULL");
         IOBUF_OK(src);
 
         dst->i_fd = src->i_fd;
@@ -205,7 +188,7 @@ iobuf_printf(struct iobuf *ip, const char *fmt, ...)
         int n = -1;
 
         IOBUF_OK(ip);
-        IOBUF_DBUG(fmt == NULL, "fmt == NULL");
+        dbug(fmt == NULL, "fmt == NULL");
 
         va_start(va, fmt);
         n = vsnprintf(buf, sizeof(buf), fmt, va);
@@ -271,8 +254,8 @@ iobuf_read(struct iobuf *ip, char *buf, size_t sz)
         size_t n = 0;
         int c = -1;
 
-        IOBUF_DBUG(buf == NULL, "buf == NULL");
-        IOBUF_DBUG(sz == 0, "sz == 0");
+        dbug(buf == NULL, "buf == NULL");
+        dbug(sz == 0, "sz == 0");
         IOBUF_OK(ip);
 
         p = buf;

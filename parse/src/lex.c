@@ -61,25 +61,8 @@ enum {
                                                                         \
         dbug((_lp)->l_back < 0, "lp->l_back < 0");                      \
 } while (0)
-
-/**
- * do dbug:
- *
- * args:
- *  @_cond: condition
- *  @_fmt:  format string
- *  @...:   arguments
- *
- * ret:
- *  @success: nothing
- *  @failure: exit process
- */
-#define LEX_DBUG(_cond, _fmt, ...) \
-        dbug(_cond, _fmt, ##__VA_ARGS__)
-
 #else
-#define LEX_OK(_lp)                /* no-op */
-#define LEX_DBUG(_cond, _fmt, ...) /* no-op */
+#define LEX_OK(_lp) /* no-op */
 #endif /* #ifdef DBUG */
 
 /* keyword */
@@ -193,8 +176,8 @@ static void lex_val(struct lex *lp);
 int
 lex_init(struct lex *lp, int fd)
 {
-        LEX_DBUG(lp == NULL, "lp == NULL");
-        LEX_DBUG(fd < 0, "fd < 0");
+        dbug(lp == NULL, "lp == NULL");
+        dbug(fd < 0, "fd < 0");
 
         memset(lp, 0, sizeof(*lp));
 
@@ -511,9 +494,9 @@ lex_hash_get(const struct kword *hash, size_t cap, const char *key)
         const struct kword *kp = NULL;
         size_t bkt = 0;
 
-        LEX_DBUG(hash == NULL, "hash == NULL");
-        LEX_DBUG(cap == 0, "cap == 0");
-        LEX_DBUG(key == NULL, "key == NULL");
+        dbug(hash == NULL, "hash == NULL");
+        dbug(cap == 0, "cap == 0");
+        dbug(key == NULL, "key == NULL");
 
         bkt = str_hash(key, cap);
         kp = &hash[bkt];
@@ -607,7 +590,7 @@ int
 lex_buf_move(struct lex *lp, struct req *rp)
 {
         LEX_OK(lp);
-        LEX_DBUG(rp == NULL, "rp == NULL");
+        dbug(rp == NULL, "rp == NULL");
 
         return req_set_buf(rp, &lp->l_buf);
 }

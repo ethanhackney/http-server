@@ -40,25 +40,8 @@
                 dbug(_v[_len] != 0, "rp->rs_hdr end not null");         \
         }                                                               \
 } while (0)
-
-/**
- * do dbug:
- *
- * args:
- *  @_cond: condition
- *  @_fmt:  format string
- *  @...:   arguments
- *
- * ret:
- *  @success: nothing
- *  @failure: exit process
- */
-#define RES_DBUG(_cond, _fmt, ...) \
-        dbug(_cond, _fmt, ##__VA_ARGS__)
-
 #else
-#define RES_OK(_rp)                /* no-op */
-#define RES_DBUG(_cond, _fmt, ...) /* no-op */
+#define RES_OK(_rp) /* no-op */
 #endif /* #ifdef DBUG */
 
 int
@@ -83,7 +66,7 @@ res_free(struct res *rsp)
 int
 res_set_buf(struct res *rsp, struct iobuf *ip)
 {
-        RES_DBUG(ip == NULL, "ip == NULL");
+        dbug(ip == NULL, "ip == NULL");
         RES_OK(rsp);
         iobuf_move(&rsp->rs_buf, ip);
         return 0;
