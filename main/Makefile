@@ -24,7 +24,8 @@ SRC     = main.c 		\
 	  ../io/src/iobuf.c 	\
 	  ../parse/src/lex.c	\
 	  ../http/src/req.c	\
-	  ../http/src/res.c
+	  ../http/src/res.c	\
+	  ../serv/src/serv.c
 CC      = gcc
 
 safe:

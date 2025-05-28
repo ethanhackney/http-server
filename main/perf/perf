@@ -1,12 +1,12 @@
 #!/bin/bash
 
-cd ../tool/perf
+cd /home/ethanhackney/code/http-server/tool/perf
 if ! make; then
   echo "$(basename $0): make failed"
   exit 1
 fi
 
-./main.py --name "LEX_HASH" ../../serv/perf/*.tab | \
+./main.py --name "LEX_HASH" ../../main/perf/*.tab | \
   sed 's/__STRUCT__/kword/g' >hash.h
 if [ $? -ne 0 ]; then
   exit 1
