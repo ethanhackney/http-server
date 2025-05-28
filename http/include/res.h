@@ -85,4 +85,18 @@ int res_set_buf(struct res *rsp, struct iobuf *ip);
  */
 int res_set_v(struct res *rsp, int v);
 
+/**
+ * write to res{}:
+ *
+ * args:
+ *  @rsp: pointer to res{}
+ *  @buf: buffer
+ *  @sz:  length of buffer
+ *
+ * ret:
+ *  @success: 0
+ *  @failure: -1 and errno set
+ */
+int res_write(struct res *rsp, const void *buf, size_t sz);
+
 #endif /* #ifndef RES_H */

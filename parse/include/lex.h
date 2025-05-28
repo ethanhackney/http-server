@@ -16,9 +16,9 @@ enum {
 /* lex mode bits */
 enum {
         LEX_MODE_FIRST, /* on first line? */
+        LEX_MODE_DONE,  /* lexer done? */
         LEX_MODE_HDR,   /* in header name? */
         LEX_MODE_VAL,   /* in header value? */
-        LEX_MODE_PAY,   /* in payload? */
         LEX_MODE_COUNT, /* mode count */
 };
 

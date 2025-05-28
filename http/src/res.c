@@ -71,3 +71,13 @@ res_set_buf(struct res *rsp, struct iobuf *ip)
         iobuf_move(&rsp->rs_buf, ip);
         return 0;
 }
+
+int
+res_write(struct res *rsp, const void *buf, size_t sz)
+{
+        RES_OK(rsp);
+        dbug(buf == NULL, "buf == NULL");
+        dbug(sz == 0, "sz == 0");
+
+        return iobuf_write(&rsp->rs_buf, buf, sz);
+}

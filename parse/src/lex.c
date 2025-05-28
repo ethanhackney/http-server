@@ -85,18 +85,6 @@ struct kword {
 static char lex_getc(struct lex *lp);
 
 /**
- * when characters are not special:
- *
- * args:
- *  @lp: pointer to lex{}
- *
- * ret:
- *  @success: nothing
- *  @failure: does not
- */
-static void lex_not_special(struct lex *lp);
-
-/**
  * set token type and class:
  *
  * args:
@@ -196,8 +184,14 @@ int
 lex_free(struct lex *lp)
 {
         LEX_OK(lp);
+
+        if (lp->l_mode != LEX_MODE_DONE) {
+                if (iobuf_free(&lp->l_buf) < 0)
+                        return -1;
+        }
+
         memset(lp, 0, sizeof(*lp));
-        lp->l_class = CL_EOF - 1;
+        lp->l_class = CL_INV;
         return 0;
 }
 
@@ -277,11 +271,8 @@ lex_next(struct lex *lp)
         int last = -1;
 
         LEX_OK(lp);
+        dbug(lp->l_mode == LEX_MODE_DONE, "lp->l_mode == LEX_MODE_DONE");
 
-        if (lp->l_mode == LEX_MODE_PAY) {
-                lex_not_special(lp);
-                return;
-        }
         last = lp->l_type;
 again:
         c = lex_getc(lp);
@@ -345,21 +336,6 @@ lex_getc(struct lex *lp)
                 lex_set_token(lp, TT_CHAR);
 
         return (char)c;
-}
-
-static void
-lex_not_special(struct lex *lp)
-{
-        char *p = NULL;
-
-        LEX_OK(lp);
-
-        while_lex_not_full(lp, p) {
-                *p = lex_getc(lp);
-                if (lp->l_type != TT_CHAR)
-                        break;
-        }
-        *p = 0;
 }
 
 static void
@@ -432,7 +408,7 @@ lex_crlf(struct lex *lp)
         if (c != '\n') {
                 lex_set_token(lp, TT_CRLF_ERR);
         } else if (lp->l_last == TT_EOL) {
-                lp->l_mode = LEX_MODE_PAY;
+                lp->l_mode = LEX_MODE_DONE;
                 lex_set_token(lp, TT_EOH);
         } else {
                 lp->l_mode = LEX_MODE_HDR;
@@ -592,6 +568,7 @@ int
 lex_buf_move(struct lex *lp, struct req *rp)
 {
         LEX_OK(lp);
+        dbug(lp->l_mode != LEX_MODE_DONE, "lp->l_mode != LEX_MODE_DONE");
         dbug(rp == NULL, "rp == NULL");
 
         return req_set_buf(rp, &lp->l_buf);

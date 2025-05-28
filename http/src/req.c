@@ -108,8 +108,13 @@ req_free(struct req *rp)
 {
         REQ_OK(rp);
 
+        if (!rp->r_moved) {
+                if (iobuf_free(&rp->r_buf) < 0)
+                        return -1;
+        }
+
         memset(rp, 0, sizeof(*rp));
-        rp->r_method = -1;
+        rp->r_method = REQ_METHOD_INV;
         return 0;
 }
 
@@ -119,6 +124,7 @@ req_set_buf(struct req *rp, struct iobuf *ip)
         dbug(ip == NULL, "ip == NULL");
         REQ_OK(rp);
         iobuf_move(&rp->r_buf, ip);
+        rp->r_moved = true;
         return 0;
 }
 
@@ -228,7 +234,7 @@ req_v_name(struct req *rp)
 }
 
 ssize_t
-req_read(struct req *rp, char *buf, size_t sz)
+req_read(struct req *rp, void *buf, size_t sz)
 {
         dbug(buf == NULL, "buf == NULL");
         dbug(sz == 0, "sz == 0");

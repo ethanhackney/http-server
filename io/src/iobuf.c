@@ -176,45 +176,6 @@ iobuf_move(struct iobuf *dst, struct iobuf *src)
         src->i_fd = -1;
 }
 
-int
-iobuf_printf(struct iobuf *ip, const char *fmt, ...)
-{
-        const char *end = NULL;
-        const char *p = NULL;
-        va_list va;
-        size_t nleft = 0;
-        size_t ncopy = 0;
-        char buf[IOBUF_SIZE] = "";
-        int n = -1;
-
-        IOBUF_OK(ip);
-        dbug(fmt == NULL, "fmt == NULL");
-
-        va_start(va, fmt);
-        n = vsnprintf(buf, sizeof(buf), fmt, va);
-        if (n < 0)
-                return -1;
-        va_end(va);
-
-        p = buf;
-        end = p + IOBUF_SIZE;
-        nleft = (size_t)n;
-        while (nleft > 0) {
-                if (iobuf_full(ip)) {
-                        if (iobuf_flush(ip) < 0)
-                                return -1;
-                }
-                ncopy = min(nleft, (size_t)(end - ip->i_outp));
-                memcpy(ip->i_outp, p, ncopy);
-                ip->i_outp += ncopy;
-                p += ncopy;
-                nleft -= ncopy;
-        }
-
-        IOBUF_OK(ip);
-        return 0;
-}
-
 static int
 iobuf_full(const struct iobuf *ip)
 {
@@ -248,25 +209,63 @@ iobuf_flush(struct iobuf *ip)
 }
 
 ssize_t
-iobuf_read(struct iobuf *ip, char *buf, size_t sz)
+iobuf_read(struct iobuf *ip, void *buf, size_t sz)
 {
         char *p = NULL;
-        size_t n = 0;
-        int c = -1;
+        size_t ncopy = 0;
+        size_t nleft = 0;
+        int ret = -1;
 
         dbug(buf == NULL, "buf == NULL");
-        dbug(sz == 0, "sz == 0");
-        IOBUF_OK(ip);
+        dbug(sz == 0, "sz == 0"); IOBUF_OK(ip);
 
         p = buf;
-        for (n = 0; n < sz; n++) {
-                c = iobuf_getc(ip);
-                if (c == IOBUF_EOF)
-                        break;
-                if (c < 0)
-                        return -1;
-                *p++ = (char)c;
+        nleft = sz;
+        while (nleft > 0) {
+                if (iobuf_empty(ip) < 0) {
+                        ret = iobuf_fill(ip);
+                        if (ret == IOBUF_EOF)
+                                break;
+                        if (ret < 0)
+                                return ret;
+                }
+                ncopy = min(nleft, (size_t)(ip->i_endp - ip->i_inp));
+                memcpy(p, ip->i_inp, ncopy);
+                p += ncopy;
+                ip->i_inp += ncopy;
+                nleft -= ncopy;
         }
 
-        return (ssize_t)(p - buf);
+        return (ssize_t)(p - (char *)buf);
+}
+
+int
+iobuf_write(struct iobuf *ip, const void *buf, size_t sz)
+{
+        const char *end = NULL;
+        const char *p = NULL;
+        size_t nleft = 0;
+        size_t ncopy = 0;
+
+        IOBUF_OK(ip);
+        dbug(buf == NULL, "buf == NULL");
+        dbug(sz == 0, "sz == 0");
+
+        p = buf;
+        end = ip->i_out + IOBUF_SIZE;
+        nleft = sz;
+        while (nleft > 0) {
+                if (iobuf_full(ip)) {
+                        if (iobuf_flush(ip) < 0)
+                                return -1;
+                }
+                ncopy = min(nleft, (size_t)(end - ip->i_outp));
+                memcpy(ip->i_outp, p, ncopy);
+                ip->i_outp += ncopy;
+                p += ncopy;
+                nleft -= ncopy;
+        }
+
+        IOBUF_OK(ip);
+        return 0;
 }

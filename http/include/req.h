@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 /* ipv[46] address */
 typedef struct sockaddr_storage ip_addr_t;
@@ -14,7 +15,6 @@ typedef struct sockaddr_storage ip_addr_t;
 enum {
         REQ_HDR_VAL_SIZE = (1 << 12) - 1, /* size of header value */
         REQ_URL_SIZE     = (1 << 12) - 1, /* url size */
-        REQ_PAY_SIZE     = (1 << 13),     /* payload size */
 };
 
 /* methods */
@@ -56,11 +56,12 @@ enum {
 /* request */
 struct req {
         struct iobuf r_buf;                       /* private: buffer */
-        ip_addr_t    r_addr;                      /* public: client address */
+        ip_addr_t    r_addr;                      /* public: address */
+        size_t       r_nread;                     /* private: bytes read */
         char         r_hdr[REQ_HDR_COUNT]
                           [REQ_HDR_VAL_SIZE + 1]; /* public: headers */
-        char         r_pay[REQ_PAY_SIZE];         /* public: payload */
         char         r_url[REQ_URL_SIZE + 1];     /* public: url */
+        bool         r_moved;                     /* private: buf moved? */
         int          r_method;                    /* public: method */
         int          r_v;                         /* public: version */
 };
@@ -165,7 +166,7 @@ const char *req_v_name(struct req *rp);
  *  @success: number of bytes read
  *  @failure: -1 and errno set
  */
-ssize_t req_read(struct req *rp, char *buf, size_t sz);
+ssize_t req_read(struct req *rp, void *buf, size_t sz);
 
 /**
  * move r_buf to rs_buf:

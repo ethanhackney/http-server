@@ -216,6 +216,7 @@ handler(int fd, struct sockaddr_storage *sp)
         const char *v = NULL;
         struct req req = {0};
         struct lex lex = {0};
+        struct res res = {0};
         int hdr = -1;
         int i = -1;
         int c = -1;
@@ -230,7 +231,9 @@ handler(int fd, struct sockaddr_storage *sp)
                 goto free_lex;
         }
 
-        while ((c = lex_class(&lex)) != CL_EOF && c != CL_ERR && c != CL_EOH) {
+        while ((c = lex_class(&lex)) != CL_EOF && c != CL_ERR) {
+                if (c == CL_EOH)
+                        break;
                 if (c == CL_METHOD)
                         req_set_method(&req, lex_type(&lex));
                 if (c == CL_VERSION)
@@ -241,8 +244,9 @@ handler(int fd, struct sockaddr_storage *sp)
                         hdr = lex_type(&lex);
                         lex_next(&lex);
                         c = lex_class(&lex);
-                        if (c == CL_VAL)
-                                req_set_hdr(&req, hdr, lex_lex(&lex));
+                        if  (c != CL_VAL)
+                                break;
+                        req_set_hdr(&req, hdr, lex_lex(&lex));
                 }
                 lex_next(&lex);
         }
@@ -266,9 +270,12 @@ handler(int fd, struct sockaddr_storage *sp)
         printf("]\n");
 
         lex_buf_move(&lex, &req);
-        writen(fd, "HTTP/1.1 200 OK\r\n", 17);
-        writen(fd, "Content-Length: 12\r\n\r\n", 22);
-        writen(fd, "hello world\n", 12);
+        req_buf_move(&req, &res);
+
+        res_write(&res, "HTTP/1.1 200 OK\r\n", 17);
+        res_write(&res, "Content-Length: 12\r\n\r\n", 22);
+        res_write(&res, "hello world\n", 12);
+        res_free(&res);
 free_req:
         req_free(&req);
 free_lex:

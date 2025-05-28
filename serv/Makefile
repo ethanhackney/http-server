@@ -32,4 +32,5 @@ safe:
 	$(CC) $(DFLAGS) $(SRC)
 
 fast:
+	./perf/perf
 	$(CC) $(FFLAGS) $(SRC)

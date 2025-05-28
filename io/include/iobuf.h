@@ -71,20 +71,6 @@ int iobuf_getc(struct iobuf *ip);
 void iobuf_move(struct iobuf *dst, struct iobuf *src);
 
 /**
- * printf for iobuf{}:
- *
- * args:
- *  @ip:  pointer to iobuf{}
- *  @fmt: format string
- *  @...: arguments
- *
- * ret:
- *  @success: 0
- *  @failure: -1 and errno set
- */
-int iobuf_printf(struct iobuf *ip, const char *fmt, ...);
-
-/**
  * flush output buffer:
  *
  * args:
@@ -108,6 +94,20 @@ int iobuf_flush(struct iobuf *ip);
  *  @success: number of bytes read
  *  @failure: -1 and errno set
  */
-ssize_t iobuf_read(struct iobuf *ip, char *buf, size_t sz);
+ssize_t iobuf_read(struct iobuf *ip, void *buf, size_t sz);
+
+/**
+ * write to iobuf{}:
+ *
+ * args:
+ *  @ip:  pointer to iobuf{}:
+ *  @buf: buffer
+ *  @sz:  size of buf
+ *
+ * ret:
+ *  @success: 0
+ *  @failure: -1 and errno set
+ */
+int iobuf_write(struct iobuf *ip, const void *buf, size_t sz);
 
 #endif /* #ifndef IOBUF_H */
