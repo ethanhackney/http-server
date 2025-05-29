@@ -14,7 +14,7 @@ methods=(
 for m in "${methods[@]}"; do
   res="$(curl -X "$m" localhost:8080 2>/dev/null)"
   if [ "$res" != "hello world" ]; then
-    echo "$m method failed"
+    echo "$m method failed: $res"
     exit 1
   fi
 done
