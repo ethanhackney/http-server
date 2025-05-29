@@ -280,9 +280,21 @@ handler(int fd, struct sockaddr_storage *sp)
         lex_buf_move(&lex, &req);
         req_buf_move(&req, &res);
 
-        res_write(&res, "HTTP/1.1 200 OK\r\n", 17);
-        res_write(&res, "Content-Length: 12\r\n\r\n", 22);
+        res_set_v(&res, req.r_v);
+        res_set_code(&res, RES_CODE_OK);
+        if (res_write_first(&res) < 0) {
+                serv_err(fd);
+                goto free_res;
+        }
+
+        res_set_hdr(&res, RES_HDR_CONTENT_LENGTH, "12");
+        if (res_write_hdr(&res) < 0) {
+                serv_err(fd);
+                goto free_res;
+        }
+
         res_write(&res, "hello world\n", 12);
+free_res:
         res_free(&res);
 free_req:
         req_free(&req);

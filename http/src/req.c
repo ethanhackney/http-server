@@ -50,7 +50,7 @@
         _in_range = _above && _below;                                   \
         dbug(!_in_range, "rp->r_v invalid");                            \
                                                                         \
-        for (_i = REQ_HDR_HOST; _i < REQ_HDR_COUNT; _i++) {             \
+        for (_i = REQ_HDR_INV + 1; _i < REQ_HDR_COUNT; _i++) {          \
                 _v = (_rp)->r_hdr[_i];                                  \
                 _len = strnlen(_v, REQ_HDR_VAL_SIZE);                   \
                 dbug(_v[_len] != 0, "rp->r_hdr end not null");          \
@@ -82,7 +82,7 @@
         __len = strnlen((_rp)->r_url, REQ_URL_SIZE);                    \
         dbug((_rp)->r_url[__len] != 0, "rp->r_url end not null");       \
                                                                         \
-        for (__i = REQ_HDR_HOST; __i < REQ_HDR_COUNT; __i++) {          \
+        for (__i = REQ_HDR_INV + 1; __i < REQ_HDR_COUNT; __i++) {       \
                 __v = (_rp)->r_hdr[__i];                                \
                 __len = strnlen(__v, REQ_HDR_VAL_SIZE);                 \
                 dbug(__v[__len] != 0, "rp->r_hdr end not null");        \

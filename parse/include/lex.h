@@ -70,7 +70,7 @@ enum {
 
 /* invalid types */
 enum {
-        LEX_MODE_INV = -1, /* invalid mode (must be first) */
+        LEX_MODE_INV = -1, /* invalid mode */
         TT_INV       = -1, /* invalid token */
         CL_INV       = -1, /* invalid class */
 };
