@@ -39,12 +39,15 @@ enum {
 
 /* header types */
 enum {
-        REQ_HDR_ACCEPT_CHARSET, /* Accept-Charset */
-        REQ_HDR_USER_AGENT,     /* User-Agent */
-        REQ_HDR_ACCEPT,         /* Accept */
-        REQ_HDR_A_IM,           /* A-IM */
-        REQ_HDR_HOST,           /* Host */
-        REQ_HDR_COUNT,          /* header count */
+        REQ_HDR_ACCEPT_DATETIME, /* Accept-Datetime */
+        REQ_HDR_ACCEPT_ENCODING, /* Accept-Encoding */
+        REQ_HDR_ACCEPT_LANGUAGE, /* Accept-Language */
+        REQ_HDR_ACCEPT_CHARSET,  /* Accept-Charset */
+        REQ_HDR_USER_AGENT,      /* User-Agent */
+        REQ_HDR_ACCEPT,          /* Accept */
+        REQ_HDR_A_IM,            /* A-IM */
+        REQ_HDR_HOST,            /* Host */
+        REQ_HDR_COUNT,           /* header count */
 };
 
 /* invalid types */

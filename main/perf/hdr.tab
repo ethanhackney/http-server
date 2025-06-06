@@ -3,3 +3,6 @@ Accept=TT_ACCEPT
 Host=TT_HOST
 A-IM=TT_A_IM
 Accept-Charset=TT_ACCEPT_CHARSET
+Accept-Datetime=TT_ACCEPT_DATETIME
+Accept-Encoding=TT_ACCEPT_ENCODING
+Accept-Language=TT_ACCEPT_LANGUAGE
