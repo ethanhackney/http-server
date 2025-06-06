@@ -4,7 +4,7 @@
 static const struct kword hdr_hash[6] = {
 	{ "User-Agent", TT_USER_AGENT },
 	{ "A-IM", TT_A_IM },
-	{ NULL },
+	{ "Accept-Charset", TT_ACCEPT_CHARSET },
 	{ "Accept", TT_ACCEPT },
 	{ NULL },
 	{ "Host", TT_HOST },

@@ -2,3 +2,4 @@ User-Agent=TT_USER_AGENT
 Accept=TT_ACCEPT
 Host=TT_HOST
 A-IM=TT_A_IM
+Accept-Charset=TT_ACCEPT_CHARSET
